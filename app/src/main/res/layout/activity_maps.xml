@@ -1,8 +1,86 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.maricia.mybikeparks.MapsActivity" />
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.constraint.ConstraintLayout
+
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cast_intro_overlay_background_color"
+        android:visibility="visible">
+
+
+        <EditText
+            android:id="@+id/locationTextField"
+            android:layout_width="335dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/searchButton"
+            android:layout_alignBottom="@+id/searchButton"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:fontFamily="@font/roboto_medium"
+            android:hint="Search for Location"
+            android:singleLine="true"
+            android:textAlignment="viewStart"
+            android:textColor="@android:color/white"
+            android:typeface="normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="41dp"
+            android:layout_height="33dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@+id/locationTextField"
+            android:background="@drawable/places_ic_search"
+            android:onClick="onClick"
+            app:layout_constraintBottom_toTopOf="@+id/map"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.647"
+            app:layout_constraintStart_toEndOf="@+id/locationTextField"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.444" />
+
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="732dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/searchButton"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/locationTextField"
+            tools:context="com.maricia.mybikeparks.MapsActivity" />
+
+        <Button
+            android:id="@+id/parksButton"
+            android:layout_width="88dp"
+            android:layout_height="48dp"
+            android:layout_alignBottom="@+id/linearLayout"
+            android:layout_alignEnd="@+id/locationTextField"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="148dp"
+            android:layout_marginTop="400dp"
+            android:onClick="onClick"
+            android:text="Parks"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.492"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/map"
+            app:layout_constraintVertical_bias="0.827" />
+    </android.support.constraint.ConstraintLayout>
+</RelativeLayout>
