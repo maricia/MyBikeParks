@@ -21,8 +21,8 @@ public class DataParser {
 
     private HashMap<String, String> getPlace(JSONObject googlePlaceJson){
         HashMap<String,String> googlePlaceMap = new HashMap<>();
-        String placeName = "empty";
-        String vicinity = "empty";
+        String placeName = "name";
+        String vicinity = "vicinity";
         String latitude = "";
         String longitude = "";
         String reference = "";

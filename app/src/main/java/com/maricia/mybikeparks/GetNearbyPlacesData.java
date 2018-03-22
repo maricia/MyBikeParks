@@ -1,6 +1,7 @@
 package com.maricia.mybikeparks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,17 +22,19 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
     String googlePlacesData;
     GoogleMap map;
     String url;
+    String TAG = "GetNearbyPlacesData";
 
 
     @Override
     protected String doInBackground(Object... objects) {
-
+      //  Log.d(TAG, "doInBackground: here I am **************" );
         map = (GoogleMap) objects[0];
         url = (String)objects[1];
         try {
 
             DownloadUrl downloadUrl = new DownloadUrl();
             googlePlacesData = downloadUrl.readUrl(url);
+            Log.d(TAG, "doInBackground: " + googlePlacesData.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -44,7 +47,7 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
     @Override
     protected void onPostExecute(String s) {
 
-        List<HashMap<String, String>> nearbyPlaceList = null;
+        List<HashMap<String, String>> nearbyPlaceList;
         DataParser parser = new DataParser();
         nearbyPlaceList = parser.parse(s);
         showNearbyPlaces(nearbyPlaceList);
@@ -74,4 +77,6 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
 
         }
     }
+
+
 }
