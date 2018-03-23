@@ -33,6 +33,8 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
@@ -68,6 +70,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double longitude;
     private static final String TAG = "MapsActivity";
     private FloatingSearchView mSearchView;
+    private PlaceAutocompleteFragment autocompleteFragment;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +81,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        autocompleteFragment.setHint("Search for Address");
-
-        //autocompleteFragment.setFilter(filter);
+        autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment.setHint("Enter Address, City or Zip Code");
         autocompleteFragment.setOnPlaceSelectedListener(this);
+        autocompleteFragment.setFilter( new AutocompleteFilter.Builder().setCountry("US").build()); //I don't think this is working
+
 
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
