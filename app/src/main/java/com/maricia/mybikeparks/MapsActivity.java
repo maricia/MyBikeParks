@@ -75,7 +75,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
 
+
+
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment.setHint("Search for Address");
+
+        //autocompleteFragment.setFilter(filter);
         autocompleteFragment.setOnPlaceSelectedListener(this);
 
 
@@ -348,6 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onPlaceSelected(Place place) {
+
 
         Log.d(TAG, "onPlaceSelected: *********" + place);
         List<Address> addressList = null;
