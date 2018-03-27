@@ -1,7 +1,9 @@
 package com.maricia.mybikeparks;
 
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +25,7 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
     GoogleMap map;
     String url;
     String TAG = "GetNearbyPlacesData";
+    RecyclerView mRecyclerView;
 
 
     @Override
@@ -51,7 +54,10 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
         DataParser parser = new DataParser();
         nearbyPlaceList = parser.parse(s);
         showNearbyPlaces(nearbyPlaceList);
+
     }
+
+
 
     private void showNearbyPlaces(List<HashMap<String,String>> nearbyPlaceList) {
 
@@ -72,8 +78,8 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
             map.addMarker(markerOptions);
             //optional - if not then camera will go to last place listed on map
             //map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            map.animateCamera(CameraUpdateFactory.zoomTo(18));
+            //map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         }
     }

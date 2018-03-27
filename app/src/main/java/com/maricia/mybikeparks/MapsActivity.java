@@ -186,7 +186,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 getNearbyPlacesData.execute(dataTransfer);
-
+                Log.d(TAG, "onClick: " );
                 Toast.makeText(MapsActivity.this, "MTB Parks", Toast.LENGTH_LONG).show();
                 break;
         }//end switch
@@ -264,6 +264,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                         mMap.setMyLocationEnabled(true);
                         getLastKnownLocation(); //update the map now that we have permission to do so
+
+
                     }
 
                 } else {
