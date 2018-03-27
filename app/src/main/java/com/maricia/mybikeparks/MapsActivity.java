@@ -83,8 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private PlaceAutocompleteFragment autocompleteFragment;
     private Boolean followUser; // This boolean will toggle if the map moves when the user's location changes
     private LocationManager mLocationManager;
-    private long UPDATE_INTERVAL = 1000; // 1 Seconds
+    private long UPDATE_INTERVAL = 1000 * 60; // 60 Seconds
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
+    boolean dolocationupdate = false; //only update my location when I tell you too
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +186,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 getNearbyPlacesData.execute(dataTransfer);
+
                 Toast.makeText(MapsActivity.this, "MTB Parks", Toast.LENGTH_LONG).show();
                 break;
         }//end switch
@@ -197,7 +199,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
+        Log.d(TAG, "onConnected: startlocation *****" + locationRequest.toString());
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
         }
@@ -337,6 +339,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
+        Log.d(TAG, "getLastKnownLocation: " + locationClient.getLastLocation().toString());
         locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -441,6 +445,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //The Location requests and makes it start recieving updates
         locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
 
@@ -449,23 +454,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.addLocationRequest(locationRequest);
         LocationSettingsRequest locationSettingsRequest = builder.build();
 
-        Log.d("MapDemoActivity", "WHAT AM I DOING");
-        // We check if the system is capable of sending/receiving location requests
-        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
-        settingsClient.checkLocationSettings(locationSettingsRequest);
 
-        if (checkLocationPermission())
-        {
+        if(dolocationupdate) {
+            Log.d("MapDemoActivity", "WHAT AM I DOING");
+            // We check if the system is capable of sending/receiving location requests
+            SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+            settingsClient.checkLocationSettings(locationSettingsRequest);
 
-            //the LocationServices here isn't in the tutorial i am reading but this was the only way to build without errors
-            final Task<Void> voidTask = LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, new LocationCallback() {
-                        @Override
-                        public void onLocationResult(LocationResult locationResult) {
-                            System.out.print("what");
-                            onLocationChanged(locationResult.getLastLocation());
-                        }
-                    }, //that looper is in the getFused...method above... just looks weird down there
-                    Looper.myLooper());
+            if (checkLocationPermission()) {
+
+                //the LocationServices here isn't in the tutorial i am reading but this was the only way to build without errors
+                final Task<Void> voidTask = LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, new LocationCallback() {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                System.out.print("what");
+                                onLocationChanged(locationResult.getLastLocation());
+                            }
+                        }, //that looper is in the getFused...method above... just looks weird down there
+                        Looper.myLooper());
+            }
         }
     }
 }

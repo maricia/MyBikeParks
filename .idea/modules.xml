@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MyBikeParks.iml" filepath="$PROJECT_DIR$/MyBikeParks.iml" />
-      <module fileurl="file://C:\Users\Joe Wolfe\Downloads\android-play-location-master\MyBikeParks\MyBikeParks.iml" filepath="C:\Users\Joe Wolfe\Downloads\android-play-location-master\MyBikeParks\MyBikeParks.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Joe Wolfe\Downloads\android-play-location-master\MyBikeParks\app\app.iml" filepath="C:\Users\Joe Wolfe\Downloads\android-play-location-master\MyBikeParks\app\app.iml" />
     </modules>
   </component>
 </project>

@@ -73,7 +73,7 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
             //optional - if not then camera will go to last place listed on map
             //map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            map.animateCamera(CameraUpdateFactory.zoomTo(18));
+            map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         }
     }
