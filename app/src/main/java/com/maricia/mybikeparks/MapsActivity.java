@@ -82,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment = (PlaceAutocompleteFragment)  getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setHint("Enter Address, City or Zip Code");
         autocompleteFragment.setOnPlaceSelectedListener(this);
         autocompleteFragment.setFilter( new AutocompleteFilter.Builder().setCountry("US").build()); //I don't think this is working
@@ -113,11 +113,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 isFollowing = false;
             }
         }
-             //else if (reason == OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION)
-            // The app moved the camera."
-            // we can't really use this one because when the map pans over to the user on
-            // initialization this one gets called so try to set the isFollowing flag when
-            // you move the map and want it to stay
+        //else if (reason == OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION)
+        // The app moved the camera."
+        // we can't really use this one because when the map pans over to the user on
+        // initialization this one gets called so try to set the isFollowing flag when
+        // you move the map and want it to stay
 
     }
 
