@@ -2,7 +2,6 @@ package com.maricia.mybikeparks;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -14,21 +13,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -41,9 +32,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -56,13 +45,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
+
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.ConnectionCallbacks, OnCameraMoveStartedListener,
         GoogleApiClient.OnConnectionFailedListener, PlaceSelectionListener,
         LocationListener {
 
@@ -71,7 +62,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationRequest locationRequest;
     private Location lastLocation;
     private Marker currLocationMarker;
-
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private Button searchButton;
     private TextView locationTextField;
@@ -81,7 +71,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String TAG = "MapsActivity";
     private FloatingSearchView mSearchView;
     private PlaceAutocompleteFragment autocompleteFragment;
-    private Boolean followUser; // This boolean will toggle if the map moves when the user's location changes
+    private Boolean isFollowing; // This boolean will toggle if the map moves when the user's location changes
+    private Boolean isCentering; //an annoying workaround to not having access to the zoom controls T.T
     private LocationManager mLocationManager;
     private long UPDATE_INTERVAL = 1000; // 1 Seconds
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
@@ -91,14 +82,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-
-
         autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setHint("Enter Address, City or Zip Code");
         autocompleteFragment.setOnPlaceSelectedListener(this);
         autocompleteFragment.setFilter( new AutocompleteFilter.Builder().setCountry("US").build()); //I don't think this is working
-
-
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -107,6 +94,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         startLocationUpdates();
+    }
+
+    @Override
+    public void onCameraMoveStarted(int reason) {
+        //This method controls when the onLocationChanged method controls the camera
+        if (reason == OnCameraMoveStartedListener.REASON_GESTURE) {
+            //"The user gestured on the map."
+            isFollowing = false;
+        } else if (reason == OnCameraMoveStartedListener.REASON_API_ANIMATION) {
+            //"The user tapped something on the map."
+            if (isCentering)
+            {
+                isCentering = false; // resets the centering flag so we know when we hit the button again
+            }
+            else
+            {
+                isFollowing = false;
+            }
+        }
+             //else if (reason == OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION)
+            // The app moved the camera."
+            // we can't really use this one because when the map pans over to the user on
+            // initialization this one gets called so try to set the isFollowing flag when
+            // you move the map and want it to stay
+
     }
 
     //to handle search button when user clicks on it
@@ -122,10 +134,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case R.id.floating_search_view:
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);   //hide the keyboard when button is pressed
                 imm.hideSoftInputFromWindow(locationTextField.getWindowToken(), 0);
-
                 EditText locationTextField = (EditText) findViewById(R.id.locationTextField);
                 String searchLocations = locationTextField.getText().toString();    //get text from text view
-
                 List<Address> addressList = null;
                 try {
                     if (!searchLocations.equals("")) {
@@ -154,6 +164,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     */
             default:Toast.makeText(this,v.getId()+"", Toast.LENGTH_LONG).show();
             case R.id.parksButton:
+                isFollowing = false;
                 mMap.clear();
                 String park = "park";
                 String url = getUrl(latitude, longitude, "park");
@@ -168,6 +179,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(Bundle bundle) {
+
         locationRequest = new LocationRequest();
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
@@ -179,13 +191,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionSuspended(int i) {
 
     }
 
-
     @Override
-    public void onConnectionSuspended(int i) {
+    public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
 
@@ -215,7 +226,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         currLocationMarker = mMap.addMarker(markerOptions);
 
         //move mMap camera
-        if (followUser) { // Todo: Find a way to detect if the user moves the map and toggle followUser if they are more interested in looking at another location.
+        if (isFollowing) { // Todo: Find a way to detect if the user moves the map and toggle isFollowing if they are more interested in looking at another location.
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
         }
@@ -242,19 +253,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        followUser = true;
+        mMap.setOnCameraMoveStartedListener(this);
+        isFollowing = true;
+        isCentering = false;
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
+            mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener(){
+                @Override
+                public boolean onMyLocationButtonClick() // listens for the Location button to be prssed
+                {
+                    //TODO: Any custom actions
+                    isCentering = true; // lets the OnCameraMoveStartedFunction know that the Location button was pressed... why can't we have more event listeners like this one...
+                    isFollowing = true; // allows the map to focus on the user's location again
+                    getLastKnownLocation();
+                    return true; //true consumes the event false the dafulat behavior occurs as well
+                }
+            });
             buildGoogleApiClient();
             getLastKnownLocation();
         }
 
     }//end onMapReady
 
-
     @Override
     public void onPlaceSelected(Place place) {
+
+
         Log.d(TAG, "onPlaceSelected: *********" + place);
         List<Address> addressList;
         try {
@@ -283,8 +308,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override
@@ -314,7 +337,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // You can add here other case statements according to your requirement.
         }
     }
-
 
     public void getTextView(){
         //   locationTextField = this.findViewById(R.id.locationTextField);//floating_search_view
@@ -399,14 +421,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void searchResults(String string){
-
         // InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);   //hide the keyboard when button is pressed
         // imm.hideSoftInputFromWindow(locationTextField.getWindowToken(), 0);
 
         //EditText locationTextField = (EditText) findViewById(R.id.locationTextField);
         // String searchLocations = locationTextField.getText().toString();    //get text from text view
-
-
 
         List<Address> addressList;
         try {
@@ -435,7 +454,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     protected void startLocationUpdates() {
-
         //The Location requests and makes it start recieving updates
         locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -454,7 +472,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (checkLocationPermission())
         {
-
             //the LocationServices here isn't in the tutorial i am reading but this was the only way to build without errors
             final Task<Void> voidTask = LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, new LocationCallback() {
                         @Override
@@ -467,4 +484,3 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 }
-
