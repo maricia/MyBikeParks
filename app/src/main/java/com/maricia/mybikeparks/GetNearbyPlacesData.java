@@ -3,7 +3,6 @@ package com.maricia.mybikeparks;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,12 +54,14 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
         nearbyPlaceList = parser.parse(s);
         showNearbyPlaces(nearbyPlaceList);
 
-    }
 
+
+    }
 
 
     private void showNearbyPlaces(List<HashMap<String,String>> nearbyPlaceList) {
 
+        
 
         //create marker options here for the parks
         for (int i = 0; i<nearbyPlaceList.size(); i++){
@@ -80,6 +81,9 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
             //map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             //map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             map.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+
+
 
         }
     }

@@ -63,7 +63,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location lastLocation;
     private Marker currLocationMarker;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    private Button searchButton;
     private TextView locationTextField;
     int PROXIMITY_RADIUS = 10000;
     double latitude;
@@ -71,21 +70,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String TAG = "MapsActivity";
     private FloatingSearchView mSearchView;
     private PlaceAutocompleteFragment autocompleteFragment;
+    private AutocompleteFilter autocompleteFilter;
     private Boolean isFollowing; // This boolean will toggle if the map moves when the user's location changes
     private Boolean isCentering; //an annoying workaround to not having access to the zoom controls T.T
     private LocationManager mLocationManager;
     private long UPDATE_INTERVAL = 1000; // 1 Seconds
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+
         autocompleteFragment = (PlaceAutocompleteFragment)  getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        autocompleteFragment.setHint("Enter Address, City or Zip Code");
-        autocompleteFragment.setOnPlaceSelectedListener(this);
-        autocompleteFragment.setFilter( new AutocompleteFilter.Builder().setCountry("US").build()); //I don't think this is working
+        autocompleteFragment.setHint("Enter Address,City or Zip Code");
+       //autocompleteFragment.setFilter( new AutocompleteFilter.Builder().setCountry("US").build());
+        autocompleteFragment.setFilter( new AutocompleteFilter.Builder().setTypeFilter(Place.TYPE_COUNTRY).setCountry("US").build());
+       // autocompleteFragment.setFilter(autocompleteFragment);
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName());
+                isFollowing = false;
+                mMap.clear();
+                CharSequence name = place.getName();
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(place.getLatLng());
+               // markerOptions.title(lastLocation.toString());
+                markerOptions.title(name.toString());
+                mMap.addMarker(markerOptions);
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                //optional - if not then camera will go to last place listed on mMap
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+
+   //     autocompleteFragment.setOnPlaceSelectedListener(this);
+
+
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -130,38 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (v.getId()){//searchButton
 
-            /*
-            case R.id.floating_search_view:
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);   //hide the keyboard when button is pressed
-                imm.hideSoftInputFromWindow(locationTextField.getWindowToken(), 0);
-                EditText locationTextField = (EditText) findViewById(R.id.locationTextField);
-                String searchLocations = locationTextField.getText().toString();    //get text from text view
-                List<Address> addressList = null;
-                try {
-                    if (!searchLocations.equals("")) {
-                        //use geocoder class to get names
-                        Geocoder geocoder = new Geocoder(this);
-                        addressList = geocoder.getFromLocationName(searchLocations, 5);      //returns as array of addresses maybe a place name, address, or airport code
-                          if(addressList != null){
-                              //put a marker on all the places searched
-                              for (int i = 0; i < addressList.size(); i++) {
-                                  Address myAddress = addressList.get(i);
-                                  LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-                                  MarkerOptions markerOptions = new MarkerOptions();
-                                  markerOptions.position(latLng);
-                                  markerOptions.title(lastLocation.toString());
-                                  mMap.addMarker(markerOptions);
-                                  markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                                  //optional - if not then camera will go to last place listed on mMap
-                                  mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                              }
-                          }
-                    }//end if
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                    break;
-                    */
+
             default:Toast.makeText(this,v.getId()+"", Toast.LENGTH_LONG).show();
             case R.id.parksButton:
                 isFollowing = false;
@@ -419,7 +421,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return true;
         }
     }
-
+/*
     public void searchResults(String string){
         // InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);   //hide the keyboard when button is pressed
         // imm.hideSoftInputFromWindow(locationTextField.getWindowToken(), 0);
@@ -452,7 +454,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
     }
-
+*/
     protected void startLocationUpdates() {
         //The Location requests and makes it start recieving updates
         locationRequest = new LocationRequest();
