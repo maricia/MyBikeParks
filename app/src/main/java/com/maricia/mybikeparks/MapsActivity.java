@@ -1,7 +1,11 @@
 package com.maricia.mybikeparks;
 
 import android.Manifest;
+import android.app.ActionBar;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,9 +17,18 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,26 +64,24 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.util.List;
-
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+//FragmentActivity
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, OnCameraMoveStartedListener,
         GoogleApiClient.OnConnectionFailedListener, PlaceSelectionListener,
         LocationListener {
 
-    private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest locationRequest;
-    private Location lastLocation;
-    private Marker currLocationMarker;
+    private GoogleMap mMap;                    //googlemap
+    private GoogleApiClient mGoogleApiClient;  //googleApiclient
+    private LocationRequest locationRequest;   //location
+    private Location lastLocation;             //last location
+    private Marker currLocationMarker;         //current location marker
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private TextView locationTextField;
     int PROXIMITY_RADIUS = 10000;
     double latitude;
     double longitude;
     private static final String TAG = "MapsActivity";
-    private FloatingSearchView mSearchView;
     private PlaceAutocompleteFragment autocompleteFragment;
-    private AutocompleteFilter autocompleteFilter;
     private Boolean isFollowing; // This boolean will toggle if the map moves when the user's location changes
     private Boolean isCentering; //an annoying workaround to not having access to the zoom controls T.T
     private LocationManager mLocationManager;
@@ -78,55 +89,100 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+        //google search bar
+        addSearch();
+        locationPermision();
+        startMap();
 
+    }//end onCreate
+    /*
+    starts the map activity and the background thread
+     */
+    private void startMap() {
+        // Obtain the SupportMapFragment and get notified when the mMap is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        startLocationUpdates();
+    }//end startMap
 
+    private void locationPermision() {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkLocationPermission();
+        }
+    }//end locationPermision
+
+    /*
+    Google search bar
+     */
+    private void addSearch() {
         autocompleteFragment = (PlaceAutocompleteFragment)  getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        autocompleteFragment.setHint("Enter Address,City or Zip Code");
-       //autocompleteFragment.setFilter( new AutocompleteFilter.Builder().setCountry("US").build());
+        autocompleteFragment.setHint("Search here");
         autocompleteFragment.setFilter( new AutocompleteFilter.Builder().setTypeFilter(Place.TYPE_COUNTRY).setCountry("US").build());
-       // autocompleteFragment.setFilter(autocompleteFragment);
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: " + place.getName());
                 isFollowing = false;
                 mMap.clear();
-                CharSequence name = place.getName();
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(place.getLatLng());
-               // markerOptions.title(lastLocation.toString());
-                markerOptions.title(name.toString());
-                mMap.addMarker(markerOptions);
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                //optional - if not then camera will go to last place listed on mMap
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                placeMarker(place);
             }
-
             @Override
             public void onError(Status status) {
                 // TODO: Handle the error.
                 Log.i(TAG, "An error occurred: " + status);
             }
         });
+    }//end addSearch
+    /*
+    marker for places from the search menu
+     */
+    private void placeMarker(Place place) {
+        CharSequence name = place.getName();
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(place.getLatLng());
+        markerOptions.title(name.toString());
+        mMap.addMarker(markerOptions);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        //optional - if not then camera will go to last place listed on mMap
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+    }//end placeMarker
 
-   //     autocompleteFragment.setOnPlaceSelectedListener(this);
+    /*
 
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+      return true;
+    }
 
-
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch (item.getItemId()){
+            case R.id.action_activity:
+                Toast.makeText(MapsActivity.this, "YOUR DESIRED BEHAVIOUR HERE", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_Stop:
+                Toast.makeText(MapsActivity.this, "YOUR DESIRED BEHAVIOUR HERE", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_Start:
+                Toast.makeText(MapsActivity.this, "YOUR DESIRED BEHAVIOUR HERE", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_about:
+                Intent intentAbout =  new Intent (this, AboutActivity.class);
+                startActivity(intentAbout);
+                break;
         }
-        // Obtain the SupportMapFragment and get notified when the mMap is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        startLocationUpdates();
+       return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -163,14 +219,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (v.getId()){//searchButton
 
-
             default:Toast.makeText(this,v.getId()+"", Toast.LENGTH_LONG).show();
             case R.id.parksButton:
                 isFollowing = false;
                 mMap.clear();
                 String park = "park";
                 String url = getUrl(latitude, longitude, "park");
-
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 getNearbyPlacesData.execute(dataTransfer);
@@ -186,7 +240,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startLocationUpdates();
         }
@@ -278,10 +331,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }//end onMapReady
 
+
     @Override
     public void onPlaceSelected(Place place) {
-
-
         Log.d(TAG, "onPlaceSelected: *********" + place);
         List<Address> addressList;
         try {
@@ -290,8 +342,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //use geocoder class to get names
                 Geocoder geocoder = new Geocoder(this);
                 addressList = geocoder.getFromLocationName(place.getName().toString(), 5);      //returns as array of addresses maybe a place name, address, or airport code
-                Log.d(TAG, "onPlaceSelected: address list: " + addressList);
-
+               // Log.d(TAG, "onPlaceSelected: address list: " + addressList);
                 if(addressList != null){
                     //put a marker on all the places searched
                     for (int i = 0; i < addressList.size(); i++) {
@@ -301,7 +352,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         markerOptions.position(latLng);
                         markerOptions.title(lastLocation.toString());
                         mMap.addMarker(markerOptions);
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                         //optional - if not then camera will go to last place listed on mMap
                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                     }
@@ -421,40 +472,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return true;
         }
     }
-/*
-    public void searchResults(String string){
-        // InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);   //hide the keyboard when button is pressed
-        // imm.hideSoftInputFromWindow(locationTextField.getWindowToken(), 0);
 
-        //EditText locationTextField = (EditText) findViewById(R.id.locationTextField);
-        // String searchLocations = locationTextField.getText().toString();    //get text from text view
-
-        List<Address> addressList;
-        try {
-            if (!string.equals("")) {
-                //use geocoder class to get names
-                Geocoder geocoder = new Geocoder(this);
-                addressList = geocoder.getFromLocationName(string, 5);      //returns as array of addresses maybe a place name, address, or airport code
-                if(addressList != null){
-                    //put a marker on all the places searched
-                    for (int i = 0; i < addressList.size(); i++) {
-                        Address myAddress = addressList.get(i);
-                        LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(latLng);
-                        markerOptions.title(lastLocation.toString());
-                        mMap.addMarker(markerOptions);
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                        //optional - if not then camera will go to last place listed on mMap
-                        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                    }
-                }
-            }//end if
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-*/
     protected void startLocationUpdates() {
         //The Location requests and makes it start recieving updates
         locationRequest = new LocationRequest();
@@ -485,4 +503,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Looper.myLooper());
         }
     }
+
+
 }

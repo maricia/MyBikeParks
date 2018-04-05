@@ -26,7 +26,7 @@ public class DataParser {
         String latitude = "";
         String longitude = "";
         String reference = "";
-        Log.d(TAG, "getPlace: " + googlePlaceJson.toString());
+      //  Log.d(TAG, "getPlace: " + googlePlaceJson.toString());
 
         try {
             if(!googlePlaceJson.isNull("name")){
