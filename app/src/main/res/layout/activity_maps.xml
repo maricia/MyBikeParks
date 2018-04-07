@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/background_light"
+    android:background="?attr/colorPrimary"
     android:visibility="visible">
 
 
@@ -14,6 +14,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="false"
         app:cardBackgroundColor="@android:color/background_light"
+        app:cardCornerRadius="8dp"
         app:cardElevation="23dp"
         app:cardUseCompatPadding="true">
 
