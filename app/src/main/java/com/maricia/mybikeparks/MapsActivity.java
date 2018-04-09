@@ -2,11 +2,13 @@ package com.maricia.mybikeparks;
 
 import android.Manifest;
 import android.app.ActionBar;
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -56,6 +58,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
@@ -63,12 +67,14 @@ import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 //FragmentActivity
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, OnCameraMoveStartedListener,
         GoogleApiClient.OnConnectionFailedListener, PlaceSelectionListener,
-        LocationListener {
+        LocationListener, SaveTrackDialogFragment.NoticeDialogListener {
 
     private GoogleMap mMap;                    //googlemap
     private GoogleApiClient mGoogleApiClient;  //googleApiclient
@@ -84,6 +90,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private PlaceAutocompleteFragment autocompleteFragment;
     private Boolean isFollowing; // This boolean will toggle if the map moves when the user's location changes
     private Boolean isCentering; //an annoying workaround to not having access to the zoom controls T.T
+    private Boolean isTracking; // flag that checks for if we need to log the user's position
+    private ArrayList<LatLng> points;
+    private PolylineOptions polylineOptions;
+    private Polyline polyline;
     private LocationManager mLocationManager;
     private long UPDATE_INTERVAL = 1000; // 1 Seconds
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
@@ -172,10 +182,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(MapsActivity.this, "YOUR DESIRED BEHAVIOUR HERE", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_Stop:
-                Toast.makeText(MapsActivity.this, "YOUR DESIRED BEHAVIOUR HERE", Toast.LENGTH_SHORT).show();
+                stopTracking();
                 break;
             case R.id.action_Start:
-                Toast.makeText(MapsActivity.this, "YOUR DESIRED BEHAVIOUR HERE", Toast.LENGTH_SHORT).show();
+                startTracking();
                 break;
             case R.id.action_about:
                 Intent intentAbout =  new Intent (this, AboutActivity.class);
@@ -184,7 +194,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
        return super.onOptionsItemSelected(item);
     }
-
     @Override
     public void onCameraMoveStarted(int reason) {
         //This method controls when the onLocationChanged method controls the camera
@@ -256,6 +265,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    public void onDialogPositiveClick(DialogFragment dialog)
+    {
+        // User touched the dialog's positive button
+        //save the path
+
+        //remove the path on the screen
+        finishTracking();
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+        // we just gunna delete the path
+        finishTracking();
+    }
+
+    @Override
     public void onError(Status status) {
 
         Toast.makeText(this, "OOPS SOMETHING WENT WRONG", Toast.LENGTH_LONG).show();
@@ -285,7 +311,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
         }
-
+        if (isTracking) {recordPath(latLng);}
         //stop location updates todo: delete this if statement or move it somewhere more appropriate
         /*
         this if statement removes the location updates we need in order to track the user
@@ -311,6 +337,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraMoveStartedListener(this);
         isFollowing = true;
         isCentering = false;
+        isTracking = false;
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
@@ -472,6 +499,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return true;
         }
     }
+
+    private void finishTracking() //clear the polylines drawn while tracking;
+    {
+        isTracking = false;
+        mMap.clear(); // ToDo: if there is a way to clear the lines without using the clear method
+        getLastKnownLocation(); // we should probably switch to that
+
+
+    }
+
+    private void recordPath(LatLng loc) // couple lines of code that draws users position over time
+    {
+        points.add(loc);
+        polylineOptions.add(loc);
+        polyline = mMap.addPolyline(polylineOptions);
+    }
+
+    private void stopTracking() //creates a Dialog box to get user's choice about what to do about the path traveled
+    {
+        if (!isTracking) return;
+        DialogFragment newFragment = new SaveTrackDialogFragment();
+        newFragment.show(getFragmentManager(), "missiles");
+    }
+
+    private void startTracking() // initialize everything needed for the recordPath Function
+    {
+        isTracking = true;
+        points = new ArrayList<LatLng>();
+        polylineOptions = new PolylineOptions();
+        polylineOptions.color(Color.BLUE);
+        polylineOptions.width(5);
+    }
+
 
     protected void startLocationUpdates() {
         //The Location requests and makes it start recieving updates

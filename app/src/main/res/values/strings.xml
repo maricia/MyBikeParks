@@ -10,6 +10,9 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
+    <string name="alert_message">Would you like to save this track?</string>
+    <string name = "alert_confirm">Yes</string>
+    <string name = "alert_deny">No</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
