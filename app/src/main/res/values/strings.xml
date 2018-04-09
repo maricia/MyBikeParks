@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Bike Parks</string>
+    <string name="app_name">Just Another Park Finder</string>
     <string name="title_activity_maps">Bike Park Map</string>
     <string name="title_activity_main">MainActivity</string>
 
@@ -7,4 +7,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
