@@ -103,7 +103,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationManager mLocationManager;
     private long UPDATE_INTERVAL = 1000; // 1 Seconds
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
-
+    private int count = 0;
 
 
     @Override
@@ -272,6 +272,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public boolean fileExist(String filename){
+        Log.d(TAG, "fileExist: " + filename);
         File file = getBaseContext().getFileStreamPath(filename);
         return file.exists();
     }
@@ -283,18 +284,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d(TAG, "onDialogPositiveClick: " + points);
         //save points to a locale memory space - later this need to be updated to a database of some sort
         String filename = "walkroutes";
-        //if file exists already and adds one
-        if(fileExist(filename)){
-            int i = 0;
-            i++;
-            Log.d(TAG, "onDialogPositiveClick: here****");
-            filename = new StringBuilder().append(filename).append(i).toString();
-        }else{
-            filename = "walkroutes";
-        }
         File directory = this.getFilesDir();
         File file = new File(directory, filename);
         FileOutputStream ops;
+        //if file exists already and adds one
+        if(fileExist(filename)){
+           count++;
+            filename = new StringBuilder().append(filename).append(count).toString();
+            Log.d(TAG, "onDialogPositiveClick: " + filename);
+        }else{
+            filename = "walkroutes";
+        }
+
+
         try {
             ops = openFileOutput(filename, this.MODE_PRIVATE);
             for(int i = 0; i < points.size(); i++ ){
@@ -306,7 +308,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             e.printStackTrace();
         }
-        Log.d(TAG, "onDialogPositiveClick: ******" +  getFilesDir()  );
+        Log.d(TAG, "onDialogPositiveClick: last " +  getFilesDir()  );
          //remove the path on the screen
         finishTracking();
     }
