@@ -271,6 +271,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    public boolean fileExist(String filename){
+        File file = getBaseContext().getFileStreamPath(filename);
+        return file.exists();
+    }
+
     @Override
     public void onDialogPositiveClick(DialogFragment dialog)
     {
@@ -278,11 +283,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d(TAG, "onDialogPositiveClick: " + points);
         //save points to a locale memory space - later this need to be updated to a database of some sort
         String filename = "walkroutes";
+        //if file exists already and adds one
+        if(fileExist(filename)){
+            int i = 0;
+            i++;
+            Log.d(TAG, "onDialogPositiveClick: here****");
+            filename = new StringBuilder().append(filename).append(i).toString();
+        }else{
+            filename = "walkroutes";
+        }
         File directory = this.getFilesDir();
         File file = new File(directory, filename);
         FileOutputStream ops;
-        //ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        //DataOutputStream out = new DataOutputStream(baos);
         try {
             ops = openFileOutput(filename, this.MODE_PRIVATE);
             for(int i = 0; i < points.size(); i++ ){
