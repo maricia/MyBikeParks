@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -66,9 +67,14 @@ import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
 
 import com.google.android.gms.tasks.Task;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 //FragmentActivity
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -97,6 +103,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationManager mLocationManager;
     private long UPDATE_INTERVAL = 1000; // 1 Seconds
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
+
 
 
     @Override
@@ -268,9 +275,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onDialogPositiveClick(DialogFragment dialog)
     {
         // User touched the dialog's positive button
-        //save the path
-
-        //remove the path on the screen
+        Log.d(TAG, "onDialogPositiveClick: " + points);
+        //save points to a locale memory space - later this need to be updated to a database of some sort
+        String filename = "walkroutes";
+        File directory = this.getFilesDir();
+        File file = new File(directory, filename);
+        FileOutputStream ops;
+        //ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //DataOutputStream out = new DataOutputStream(baos);
+        try {
+            ops = openFileOutput(filename, this.MODE_PRIVATE);
+            for(int i = 0; i < points.size(); i++ ){
+                Log.d(TAG, "addnewOverlayhere: uhmmm: " + points.get(i));
+                ops.write(this.points.indexOf(i));
+            }
+            ops.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "onDialogPositiveClick: ******" +  getFilesDir()  );
+         //remove the path on the screen
         finishTracking();
     }
 
@@ -361,7 +386,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onPlaceSelected(Place place) {
-        Log.d(TAG, "onPlaceSelected: *********" + place);
+        //Log.d(TAG, "onPlaceSelected: *********" + place);
         List<Address> addressList;
         try {
             //Just wanna make sure this if statement works. can you use .equals between a Place object and a String
@@ -419,9 +444,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void getTextView(){
+        //some kind of timmer goes here so we can see how long we have active
         //   locationTextField = this.findViewById(R.id.locationTextField);//floating_search_view
         //   searchButton = this.findViewById(R.id.searchButton);//floating_search_view
     }
+
 
     private void getLastKnownLocation() // Lets you get the current location with a single method call.
     {
@@ -452,7 +479,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 e.printStackTrace();
             }
-        }); }
+        });
+
+
+    }
 
     private String getUrl(double latitude, double longitude, String nearbyPlace ){
 
@@ -514,14 +544,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         points.add(loc);
         polylineOptions.add(loc);
         polyline = mMap.addPolyline(polylineOptions);
+        Log.d(TAG, "recordPath: ****" + points);
+
     }
 
     private void stopTracking() //creates a Dialog box to get user's choice about what to do about the path traveled
     {
         if (!isTracking) return;
+        ArrayList<LatLng> myLocation = points;  //points
+
+        Log.d(TAG, "stopTracking: *********" + myLocation);
+
+
         DialogFragment newFragment = new SaveTrackDialogFragment();
         newFragment.show(getFragmentManager(), "missiles");
+        addnewOverlayhere(myLocation);
     }
+
+    public void addnewOverlayhere(ArrayList<LatLng> myLocation) {
+
+
+    }
+
+
 
     private void startTracking() // initialize everything needed for the recordPath Function
     {
@@ -530,6 +575,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         polylineOptions = new PolylineOptions();
         polylineOptions.color(Color.BLUE);
         polylineOptions.width(5);
+
     }
 
 
@@ -539,6 +585,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
+
 
         // we build  a location settings request object using a builder based on the above
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
