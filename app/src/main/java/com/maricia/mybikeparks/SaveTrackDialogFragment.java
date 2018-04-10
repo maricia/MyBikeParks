@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Created by Joe Wolfe on 4/8/2018.
@@ -13,6 +14,8 @@ import android.os.Bundle;
 
 public class SaveTrackDialogFragment extends DialogFragment
 {
+    final static String TAG = "SaveTrackDialogFragment";  //can log things now
+
 
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
@@ -50,6 +53,9 @@ public class SaveTrackDialogFragment extends DialogFragment
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the positive button event back to the host activity
                         mListener.onDialogPositiveClick(SaveTrackDialogFragment.this);
+                        Log.d(TAG, "onClick:  uhh lets see" );
+                        MapsActivity backtomap = new MapsActivity();
+
                     }
                 })
                 .setNegativeButton(R.string.alert_deny, new DialogInterface.OnClickListener() {
@@ -61,4 +67,7 @@ public class SaveTrackDialogFragment extends DialogFragment
         // Create the AlertDialog object and return it
         return builder.create();
     }
+
+
+
 }
