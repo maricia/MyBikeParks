@@ -16,6 +16,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -103,7 +105,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationManager mLocationManager;
     private long UPDATE_INTERVAL = 1000; // 1 Seconds
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
-    private int count = 0;
+    private int count = 0; //count the number of saved files
+    private Chronometer timmer; //timer for activity
+    private String howLong; //activity time
 
 
     @Override
@@ -189,9 +193,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(MapsActivity.this, "YOUR DESIRED BEHAVIOUR HERE", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_Stop:
+                stopTiming();
                 stopTracking();
                 break;
             case R.id.action_Start:
+                startTiming();
                 startTracking();
                 break;
             case R.id.action_about:
@@ -201,6 +207,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
        return super.onOptionsItemSelected(item);
     }
+
+    private void stopTiming() {
+        String howLong =  timmer.getText().toString();
+        Toast.makeText(this, "howLong: " + howLong, Toast.LENGTH_LONG).show();
+        timmer.stop();
+        //TODO save time with the walkroute
+    }
+
+    private void startTiming() {
+        Log.d(TAG, "startTiming: Stsrtnow");
+      // Chronometer timmer = (Chronometer) findViewById(R.id.timmer);
+       timmer = (Chronometer) findViewById(R.id.timmer);
+       timmer.setBase(SystemClock.elapsedRealtime()); //reset timmer
+       timmer.start(); //start
+    }
+
     @Override
     public void onCameraMoveStarted(int reason) {
         //This method controls when the onLocationChanged method controls the camera
@@ -276,27 +298,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         File file = getBaseContext().getFileStreamPath(filename);
         return file.exists();
     }
+    
+    
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog)
     {
         // User touched the dialog's positive button
-        Log.d(TAG, "onDialogPositiveClick: " + points);
         //save points to a locale memory space - later this need to be updated to a database of some sort
+        SaveUserTracks();
+        //remove the path on the screen
+        finishTracking();
+    }
+
+    private void SaveUserTracks() {
+
         String filename = "walkroutes";
-        File directory = this.getFilesDir();
-        File file = new File(directory, filename);
         FileOutputStream ops;
+
         //if file exists already and adds one
         if(fileExist(filename)){
-           count++;
+            count++;
             filename = new StringBuilder().append(filename).append(count).toString();
             Log.d(TAG, "onDialogPositiveClick: " + filename);
         }else{
             filename = "walkroutes";
         }
-
-
+        //make new file and save locations hopefully I will be able to do a layout on the map 
+        //with this saved file.
+        //TODO display map overlay using corridantes in saved file
         try {
             ops = openFileOutput(filename, this.MODE_PRIVATE);
             for(int i = 0; i < points.size(); i++ ){
@@ -308,9 +338,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             e.printStackTrace();
         }
-        Log.d(TAG, "onDialogPositiveClick: last " +  getFilesDir()  );
-         //remove the path on the screen
-        finishTracking();
+        
     }
 
     @Override
@@ -566,17 +594,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         if (!isTracking) return;
         ArrayList<LatLng> myLocation = points;  //points
-
-        Log.d(TAG, "stopTracking: *********" + myLocation);
-
-
         DialogFragment newFragment = new SaveTrackDialogFragment();
         newFragment.show(getFragmentManager(), "missiles");
         addnewOverlayhere(myLocation);
     }
 
     public void addnewOverlayhere(ArrayList<LatLng> myLocation) {
-
+      //TODO add tracks overlay and make activity summary page
 
     }
 
