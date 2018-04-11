@@ -14,6 +14,7 @@ import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -24,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -72,6 +74,7 @@ import com.google.android.gms.tasks.Task;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -106,7 +109,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private long UPDATE_INTERVAL = 1000; // 1 Seconds
     private long FASTEST_INTERVAL = 1000; // 1 Seconds
     private int count = 0; //count the number of saved files
-    private Chronometer timmer; //timer for activity
+    private Chronometer timeKeeper; //timer for activity
     private String howLong; //activity time
 
 
@@ -190,7 +193,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()){
             case R.id.action_activity:
-                Toast.makeText(MapsActivity.this, "YOUR DESIRED BEHAVIOUR HERE", Toast.LENGTH_SHORT).show();
+                Intent intentActiveSummary = new Intent(this, SummaryActivity.class);
+                startActivity(intentActiveSummary);
                 break;
             case R.id.action_Stop:
                 stopTiming();
@@ -208,19 +212,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
        return super.onOptionsItemSelected(item);
     }
 
-    private void stopTiming() {
-        String howLong =  timmer.getText().toString();
-        Toast.makeText(this, "howLong: " + howLong, Toast.LENGTH_LONG).show();
-        timmer.stop();
-        //TODO save time with the walkroute
+    public  void startTiming() {
+        Log.d(TAG, "startTiming: Stsrtnow");
+        timeKeeper = (Chronometer) findViewById(R.id.timmer);
+        timeKeeper.setBase(SystemClock.elapsedRealtime()); //reset
+        timeKeeper.start();
+
     }
 
-    private void startTiming() {
-        Log.d(TAG, "startTiming: Stsrtnow");
-      // Chronometer timmer = (Chronometer) findViewById(R.id.timmer);
-       timmer = (Chronometer) findViewById(R.id.timmer);
-       timmer.setBase(SystemClock.elapsedRealtime()); //reset timmer
-       timmer.start(); //start
+
+    private void stopTiming() {
+        String howLong =  timeKeeper.getText().toString();
+        Toast.makeText(this, "howLong: " + howLong, Toast.LENGTH_LONG).show();
+        timeKeeper.stop();
+        //TODO save time with the walkroute
     }
 
     @Override
@@ -293,54 +298,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    public boolean fileExist(String filename){
-        Log.d(TAG, "fileExist: " + filename);
-        File file = getBaseContext().getFileStreamPath(filename);
-        return file.exists();
-    }
-    
-    
-
     @Override
     public void onDialogPositiveClick(DialogFragment dialog)
     {
         // User touched the dialog's positive button
-        //save points to a locale memory space - later this need to be updated to a database of some sort
-        SaveUserTracks();
+        //SaveUserTracks();
+        new FilesCreations().execute();
         //remove the path on the screen
         finishTracking();
     }
 
-    private void SaveUserTracks() {
+    public void addnewOverlayhere(ArrayList<LatLng> myLocation) {
+        //TODO add tracks overlay and make activity summary page
+        //open file
+        //save contents into variable
+        // read LatLng
+        // display on screen
 
-        String filename = "walkroutes";
-        FileOutputStream ops;
-
-        //if file exists already and adds one
-        if(fileExist(filename)){
-            count++;
-            filename = new StringBuilder().append(filename).append(count).toString();
-            Log.d(TAG, "onDialogPositiveClick: " + filename);
-        }else{
-            filename = "walkroutes";
-        }
-        //make new file and save locations hopefully I will be able to do a layout on the map 
-        //with this saved file.
-        //TODO display map overlay using corridantes in saved file
-        try {
-            ops = openFileOutput(filename, this.MODE_PRIVATE);
-            for(int i = 0; i < points.size(); i++ ){
-                Log.d(TAG, "addnewOverlayhere: uhmmm: " + points.get(i));
-                //ops.write(this.points.indexOf(i));
-
-                ops.write(points.toString().getBytes());
-            }
-            ops.close();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        
     }
 
     @Override
@@ -487,12 +461,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void getTextView(){
-        //some kind of timmer goes here so we can see how long we have active
-        //   locationTextField = this.findViewById(R.id.locationTextField);//floating_search_view
-        //   searchButton = this.findViewById(R.id.searchButton);//floating_search_view
-    }
-
 
     private void getLastKnownLocation() // Lets you get the current location with a single method call.
     {
@@ -601,13 +569,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         addnewOverlayhere(myLocation);
     }
 
-    public void addnewOverlayhere(ArrayList<LatLng> myLocation) {
-      //TODO add tracks overlay and make activity summary page
-
-    }
-
-
-
     private void startTracking() // initialize everything needed for the recordPath Function
     {
         isTracking = true;
@@ -650,6 +611,73 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Looper.myLooper());
         }
     }
+
+
+    private class FilesCreations extends AsyncTask<Void, Void, String >{
+
+        //save points to a locale memory space - later this need to be updated to a database of some sort
+        final static String TAG = "FilesCreations";
+
+        private boolean fileExist(String filename){
+            Log.d(TAG, "FilesCreations: " + filename);
+            File file = getBaseContext().getFileStreamPath(filename);
+            return file.exists();
+        }
+
+        private String fileNames(){
+            String filename = "walkroutes.txt";
+            //if file exists already and adds one
+            if(fileExist(filename)){
+                count++;
+                filename = new StringBuilder().append(filename).append(count).toString();
+                Log.d(TAG, "FilesCreations: " + filename);
+            }else{
+                filename = "walkroutes.txt";
+            }
+            return filename;
+        }
+
+        private void saveUserTracks(){
+
+            FileOutputStream ops;
+            String filename = fileNames();
+            //save locations hopefully I will be able to do a layout on the map
+            //TODO display map overlay using saves latlng in saved file
+            try {
+                ops = openFileOutput(filename, MODE_PRIVATE);
+                for(int i = 0; i < points.size(); i++ ){
+                    Log.d(TAG, "addnewOverlayhere: uhmmm: " + points.get(i));
+                    //ops.write(this.points.indexOf(i));
+                    ops.write(points.toString().getBytes());
+                }
+                ops.close();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            saveUserTracks();
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(getApplicationContext(), "file made ", Toast.LENGTH_LONG).show();
+        }
+    }
+
 
 
 }
