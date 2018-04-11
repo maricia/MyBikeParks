@@ -331,7 +331,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             ops = openFileOutput(filename, this.MODE_PRIVATE);
             for(int i = 0; i < points.size(); i++ ){
                 Log.d(TAG, "addnewOverlayhere: uhmmm: " + points.get(i));
-                ops.write(this.points.indexOf(i));
+                //ops.write(this.points.indexOf(i));
+
+                ops.write(points.toString().getBytes());
             }
             ops.close();
         } catch (IOException e)
