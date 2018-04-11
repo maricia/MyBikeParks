@@ -81,6 +81,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 //FragmentActivity
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, OnCameraMoveStartedListener,
@@ -111,6 +113,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int count = 0; //count the number of saved files
     private Chronometer timeKeeper; //timer for activity
     private String howLong; //activity time
+    public Integer startCount = 0;
 
 
     @Override
@@ -197,7 +200,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(intentActiveSummary);
                 break;
             case R.id.action_Stop:
-                stopTiming();
+               // stopTiming();
                 stopTracking();
                 break;
             case R.id.action_Start:
@@ -217,13 +220,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         timeKeeper = (Chronometer) findViewById(R.id.timmer);
         timeKeeper.setBase(SystemClock.elapsedRealtime()); //reset
         timeKeeper.start();
+        startCount ++;
 
     }
 
 
-    private void stopTiming() {
-        String howLong =  timeKeeper.getText().toString();
-        Toast.makeText(this, "howLong: " + howLong, Toast.LENGTH_LONG).show();
+    public void stopTiming() {
+      //  howLong =  timeKeeper.getText().toString();
+      //  Toast.makeText(this, "howLong: " + howLong, Toast.LENGTH_LONG).show();
         timeKeeper.stop();
         //TODO save time with the walkroute
     }
@@ -321,6 +325,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onDialogNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative button
         // we just gunna delete the path
+        timeKeeper.stop();
         finishTracking();
     }
 
@@ -615,25 +620,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private class FilesCreations extends AsyncTask<Void, Void, String >{
 
-        //save points to a locale memory space - later this need to be updated to a database of some sort
         final static String TAG = "FilesCreations";
+        String totalTime = new String(); //stores total time of activity
+
+        //save points to a locale memory space - later this need to be updated to a database of some sort
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            howLong =  timeKeeper.getText().toString();
+            Toast.makeText(getApplicationContext(), "howLong: " + howLong, Toast.LENGTH_LONG).show();
+            timeKeeper.stop();
+        }
 
         private boolean fileExist(String filename){
-            Log.d(TAG, "FilesCreations: " + filename);
+           // Log.d(TAG, "FilesCreations: " + filename);
             File file = getBaseContext().getFileStreamPath(filename);
             return file.exists();
         }
 
         private String fileNames(){
-            String filename = "walkroutes.txt";
+            String filename = "walkroutes";
             //if file exists already and adds one
+           /*
             if(fileExist(filename)){
                 count++;
                 filename = new StringBuilder().append(filename).append(count).toString();
                 Log.d(TAG, "FilesCreations: " + filename);
             }else{
-                filename = "walkroutes.txt";
+                filename = "walkroutes";
             }
+            */
+           if(!fileExist(filename)){
+               filename = "walkroutes";
+           }
             return filename;
         }
 
@@ -641,15 +661,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             FileOutputStream ops;
             String filename = fileNames();
+            Map<String, String> walktime = new HashMap<>();
+            Map<Integer, String> walkingPoints = new HashMap<>();
+            String t = "";
             //save locations hopefully I will be able to do a layout on the map
             //TODO display map overlay using saves latlng in saved file
+            //keep track of everytime you push start - this would be the number of locations
+            //only makes one file and appends each time you walk on the end of the file.
             try {
-                ops = openFileOutput(filename, MODE_PRIVATE);
-                for(int i = 0; i < points.size(); i++ ){
-                    Log.d(TAG, "addnewOverlayhere: uhmmm: " + points.get(i));
-                    //ops.write(this.points.indexOf(i));
-                    ops.write(points.toString().getBytes());
-                }
+                walktime.put("TotalTime",howLong);
+                ops = openFileOutput(filename, MODE_APPEND);
+                ops.write(walktime.toString().getBytes());
+                t = String.valueOf(points);
+                walkingPoints.put(startCount,t);
+                ops.write(walkingPoints.toString().getBytes());
                 ops.close();
             } catch (IOException e)
             {
@@ -657,19 +682,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-
         @Override
         protected String doInBackground(Void... voids) {
 
-            saveUserTracks();
 
+            saveUserTracks();
             return null;
         }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+
+
 
         @Override
         protected void onPostExecute(String s) {

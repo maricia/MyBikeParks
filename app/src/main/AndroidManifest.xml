@@ -35,10 +35,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCNj5OT2cfFeCM9ooAJItnMqhfolBKuhUU" />
 
-        <activity android:name=".MapsActivity"
-            >
-
-          <intent-filter>
+        <activity android:name=".MapsActivity">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -46,7 +44,15 @@
         </activity>
         <activity
             android:name=".AboutActivity"
-            android:parentActivityName=".MapsActivity" >
+            android:parentActivityName=".MapsActivity" />
+        <activity
+            android:name=".SummaryActivity"
+            android:label="@string/title_activity_summary"
+            android:parentActivityName=".MapsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.maricia.mybikeparks.MapsActivity" />
         </activity>
     </application>
 
