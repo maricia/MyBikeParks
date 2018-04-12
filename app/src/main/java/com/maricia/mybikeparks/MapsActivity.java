@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -18,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -631,6 +633,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             howLong =  timeKeeper.getText().toString();
             Toast.makeText(getApplicationContext(), "howLong: " + howLong, Toast.LENGTH_LONG).show();
             timeKeeper.stop();
+            Log.d(TAG, "onPreExecute: ***********" + points.getClass().getName());
         }
 
         private boolean fileExist(String filename){
@@ -651,6 +654,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 filename = "walkroutes";
             }
             */
+
            if(!fileExist(filename)){
                filename = "walkroutes";
            }
@@ -662,19 +666,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             FileOutputStream ops;
             String filename = fileNames();
             Map<String, String> walktime = new HashMap<>();
-            Map<Integer, String> walkingPoints = new HashMap<>();
+            //Map<Integer, String> walkingPoints = new HashMap<>();
             String t = "";
+
             //save locations hopefully I will be able to do a layout on the map
             //TODO display map overlay using saves latlng in saved file
             //keep track of everytime you push start - this would be the number of locations
             //only makes one file and appends each time you walk on the end of the file.
+            //this file is located under files
             try {
-                walktime.put("TotalTime",howLong);
-                ops = openFileOutput(filename, MODE_APPEND);
-                ops.write(walktime.toString().getBytes());
                 t = String.valueOf(points);
-                walkingPoints.put(startCount,t);
-                ops.write(walkingPoints.toString().getBytes());
+                walktime.put("TotalTime",howLong);
+                walktime.put("Routes", t);
+                ops = openFileOutput(filename, MODE_APPEND);
+                //writing a string, "walktime" to the "walkroutes" file
+                ops.write(walktime.toString().getBytes());
+                //walkingPoints.put(startCount,t);
+                //ops.write(walkingPoints.toString().getBytes());
                 ops.close();
             } catch (IOException e)
             {
@@ -685,13 +693,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         protected String doInBackground(Void... voids) {
 
-
             saveUserTracks();
             return null;
         }
-
-
-
 
         @Override
         protected void onPostExecute(String s) {
