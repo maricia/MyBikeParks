@@ -20,10 +20,10 @@ import java.util.List;
 
 public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
 
+    String TAG = "GetNearbyPlacesData";
     String googlePlacesData;
     GoogleMap map;
     String url;
-    String TAG = "GetNearbyPlacesData";
     RecyclerView mRecyclerView;
 
 
@@ -53,15 +53,10 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
         DataParser parser = new DataParser();
         nearbyPlaceList = parser.parse(s);
         showNearbyPlaces(nearbyPlaceList);
-
-
-
     }
 
 
     private void showNearbyPlaces(List<HashMap<String,String>> nearbyPlaceList) {
-
-        
 
         //create marker options here for the parks
         for (int i = 0; i<nearbyPlaceList.size(); i++){
