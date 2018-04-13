@@ -98,11 +98,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int count = 0; //count the number of saved files
     private Chronometer timeKeeper; //timer for activity
     private String howLong; //activity time
-    public Integer startCount = 0;
-    public static final  String BileParkMapStats_PREFERENCES = "BikeParkMapStats";
-    private String todaysDate;
-    public String activityDate;
-    boolean isStopping = false;
+    public Integer startCount = 0;  //what activity
+    public static final  String BileParkMapStats_PREFERENCES = "BikeParkMapStats";  //pref file name
+    private String todaysDate;  //todays date
+    public String activityDate; //date for pref
+    boolean isStopping = false; //flag for prefsave
     public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate";
 
 
