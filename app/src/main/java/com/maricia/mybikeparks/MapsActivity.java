@@ -1,17 +1,13 @@
 package com.maricia.mybikeparks;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -19,29 +15,18 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arlib.floatingsearchview.FloatingSearchView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -73,14 +58,12 @@ import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
 
 import com.google.android.gms.tasks.Task;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,12 +93,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private PolylineOptions polylineOptions;
     private Polyline polyline;
     private LocationManager mLocationManager;
-    private long UPDATE_INTERVAL = 1000; // 1 Seconds
-    private long FASTEST_INTERVAL = 1000; // 1 Seconds
+    private long UPDATE_INTERVAL = 60000; // 1 minute
+    private long FASTEST_INTERVAL = 30000; // 30 Seconds
     private int count = 0; //count the number of saved files
     private Chronometer timeKeeper; //timer for activity
     private String howLong; //activity time
     public Integer startCount = 0;
+    public static final  String BileParkMapStats_PREFERENCES = "BikeParkMapStats";
+    private String todaysDate;
+    public String activityDate;
+    boolean isStopping = false;
+    public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate";
 
 
     @Override
@@ -202,7 +190,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(intentActiveSummary);
                 break;
             case R.id.action_Stop:
-               // stopTiming();
+                stopTiming();
                 stopTracking();
                 break;
             case R.id.action_Start:
@@ -217,22 +205,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
        return super.onOptionsItemSelected(item);
     }
 
-    public  void startTiming() {
-        Log.d(TAG, "startTiming: Stsrtnow");
-        timeKeeper = (Chronometer) findViewById(R.id.timmer);
-        timeKeeper.setBase(SystemClock.elapsedRealtime()); //reset
-        timeKeeper.start();
-        startCount ++;
 
-    }
-
-
-    public void stopTiming() {
-      //  howLong =  timeKeeper.getText().toString();
-      //  Toast.makeText(this, "howLong: " + howLong, Toast.LENGTH_LONG).show();
-        timeKeeper.stop();
-        //TODO save time with the walkroute
-    }
 
     @Override
     public void onCameraMoveStarted(int reason) {
@@ -356,12 +329,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         currLocationMarker = mMap.addMarker(markerOptions);
 
+        //save current location to prefences
+
+
         //move mMap camera
         if (isFollowing) { // Todo: Find a way to detect if the user moves the map and toggle isFollowing if they are more interested in looking at another location.
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
         }
-        if (isTracking) {recordPath(latLng);}
+        if (isTracking) {
+
+            recordPath(latLng);
+        }
         //stop location updates todo: delete this if statement or move it somewhere more appropriate
         /*
         this if statement removes the location updates we need in order to track the user
@@ -490,6 +469,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (location != null) {
                     onLocationChanged(location);
                 }
+                Log.d(TAG, "onSuccess: last known location" + latitude + longitude);
+                //maybe save to prefernces here
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -549,6 +530,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    public String getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat mdformat = new SimpleDateFormat("MM-dd-yyyy");
+        todaysDate = mdformat.format(calendar.getTime());
+        return todaysDate;
+    }
+
+    public  void startTiming() {
+        Log.d(TAG, "startTiming: Stsrtnow");
+        timeKeeper = (Chronometer) findViewById(R.id.timmer);
+        timeKeeper.setBase(SystemClock.elapsedRealtime()); //reset
+        String activityDate = getCurrentDate();
+        timeKeeper.start();
+        startCount ++;
+    }
+    public void stopTiming() {
+        //  howLong =  timeKeeper.getText().toString();
+        //  Toast.makeText(this, "howLong: " + howLong, Toast.LENGTH_LONG).show();
+        timeKeeper.stop();
+
+    }
+
     private void finishTracking() //clear the polylines drawn while tracking;
     {
         isTracking = false;
@@ -570,6 +573,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void stopTracking() //creates a Dialog box to get user's choice about what to do about the path traveled
     {
         if (!isTracking) return;
+        isStopping = true;
+        saveLocationToPreferences(latitude, longitude, isStopping);
         ArrayList<LatLng> myLocation = points;  //points
         DialogFragment newFragment = new SaveTrackDialogFragment();
         newFragment.show(getFragmentManager(), "missiles");
@@ -578,12 +583,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void startTracking() // initialize everything needed for the recordPath Function
     {
+        //maybe save to prefences here
+        saveLocationToPreferences(latitude, longitude, isStopping);
         isTracking = true;
         points = new ArrayList<LatLng>();
         polylineOptions = new PolylineOptions();
         polylineOptions.color(Color.BLUE);
         polylineOptions.width(5);
 
+    }
+   //save distance and time to Preferences
+    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping){
+
+        SharedPreferences sharedPref = this.getSharedPreferences(BileParkMapStats_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Log.d(TAG, "saveLocationToPreferences: howlong" + howLong);
+        activityDate = getCurrentDate();
+        if(!isStopping){
+            editor.putString(myStartLat, Double.valueOf(latitude).toString());
+            editor.putString(myStartLon, Double.valueOf(longitude).toString());
+            editor.putString(myActivityDate, activityDate); //date of activity
+            editor.commit();
+        }else {
+            //this happens at stop
+            editor.putString(myStopLat, Double.valueOf(latitude).toString());
+            editor.putString(myStopLon, Double.valueOf(longitude).toString());
+            howLong =  timeKeeper.getText().toString();
+            //start time my always be 0
+            //this may need to be converted to a different type later
+            editor.putString(myStopTime, howLong);
+            editor.commit();
+        }
+
+        //read from pref example
+        //String latitudeString = pref.getString("Latitude", "0");
+        //double latitude = Double.parseDouble(latitudeString);
     }
 
 
