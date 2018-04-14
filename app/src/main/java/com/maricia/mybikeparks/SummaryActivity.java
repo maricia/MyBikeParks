@@ -45,7 +45,7 @@ public class SummaryActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setbuttons();  //set button
-       // checkForFile();  //check for walkroute file
+        checkForFile();  //check for walkroute file
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }//end onCreate
@@ -54,6 +54,7 @@ public class SummaryActivity extends AppCompatActivity {
         //get buttons, and check to see if walk file exists
         readfilebtn = this.findViewById(R.id.readfilebtn);
         readFileTextView = this.findViewById(R.id.readFileTextView);
+        readfilebtn.setEnabled(false);
     }
 
 
@@ -61,8 +62,8 @@ public class SummaryActivity extends AppCompatActivity {
     public void checkForFile() {
         file = getBaseContext().getFileStreamPath(filename);
         Log.d(TAG, "readFile: fileName typeOf: " + file.getClass().getName());
-        if (file.exists())  readfilebtn.setEnabled(true);
-        else  readfilebtn.setEnabled(false);
+        if (file.exists()) { readfilebtn.setEnabled(true);}
+        else { readfilebtn.setEnabled(false);}
     }
 
     public void readFile(){
@@ -107,10 +108,7 @@ public class SummaryActivity extends AppCompatActivity {
       //  new FilesCreations().execute();
     }
 
-    private String setButton() {
-        readfilebtn.setEnabled(false);
-        return null;
-    }
+
 
 
     /*
