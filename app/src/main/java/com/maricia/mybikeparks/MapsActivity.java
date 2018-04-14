@@ -616,9 +616,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             editor.commit();
         }
 
-        //read from pref example
-        //String latitudeString = pref.getString("Latitude", "0");
-        //double latitude = Double.parseDouble(latitudeString);
+
     }
 
 

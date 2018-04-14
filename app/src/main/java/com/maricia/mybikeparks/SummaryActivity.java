@@ -1,11 +1,14 @@
 package com.maricia.mybikeparks;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,9 +34,12 @@ public class SummaryActivity extends AppCompatActivity {
     final static String TAG = "SummaryActivity";
     TextView readFileTextView;  //readfile view
     TextView totalTimeTextView;  //total time view
+    TextView dateWalkTextView; //date view
     Button readfilebtn; //read file button
     String filename = "walkroutes"; //file name
     File file; //file for location
+    String theDate; //shared pref return
+    String walkTime; //shared pref return
 
 
 
@@ -80,14 +86,15 @@ public class SummaryActivity extends AppCompatActivity {
             Map<Integer, String> routeInfo = new HashMap<>();
             String[] Time = extraFile.split("TotalTime=");
 
-
-
             Log.d(TAG, "readFile: *****" + Time.toString() +"*****" + String.valueOf(Time));
 
             readFileTextView = this.findViewById(R.id.readFileTextView);
             readFileTextView.setText(extraFile);
             totalTimeTextView = this.findViewById(R.id.totalTimeTextView);
-
+            dateWalkTextView = this.findViewById(R.id.dateWalkTextView);
+            ReadFromPrefs();
+            totalTimeTextView.setText(walkTime);
+            dateWalkTextView.setText(theDate);
             Toast.makeText(getBaseContext(), filename,Toast.LENGTH_LONG).show();
 
             fis.close();
@@ -97,9 +104,24 @@ public class SummaryActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
     }//end readFile
 
+    private void ReadFromPrefs() {
+
+        // SharedPreferences sharedPref = this.getSharedPreferences( Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences("BikeParkMapStats",Context.MODE_PRIVATE);
+
+        String startLat = sharedPref.getString("myStartLat", "0");
+        String startLng = sharedPref.getString("myStartLon", "0");
+        theDate = sharedPref.getString("myActivityDate","0");
+        walkTime = sharedPref.getString("myStopTime", "0");
+
+        Log.d(TAG, "ReadFromPrefs: " + theDate + " " + startLat + " " + startLng + " " + walkTime);
+
+        //read from pref example
+        //String latitudeString = pref.getString("Latitude", "0");
+       // double latitude = Double.parseDouble(latitudeString);
+    }
 
 
     public void onClick(View v){
