@@ -578,7 +578,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         saveLocationToPreferences(latitude, longitude, isStopping);
         ArrayList<LatLng> myLocation = points;  //points
         DialogFragment newFragment = new SaveTrackDialogFragment();
-        newFragment.show(getFragmentManager(), "missiles");
+        newFragment.show(getFragmentManager(), "saveDialog");
         addnewOverlayhere(myLocation);
     }
 
