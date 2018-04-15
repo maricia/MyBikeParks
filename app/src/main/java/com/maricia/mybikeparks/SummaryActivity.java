@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SummaryActivity extends AppCompatActivity {
 
@@ -40,6 +42,7 @@ public class SummaryActivity extends AppCompatActivity {
     File file; //file for location
     String theDate; //shared pref return
     String walkTime; //shared pref return
+    private ArrayList<LatLng> points;
 
 
 
@@ -75,6 +78,7 @@ public class SummaryActivity extends AppCompatActivity {
     public void readFile(){
 
         String extraFile =""; //temp storage
+        points = new ArrayList<>();
         int i;
         try {
             FileInputStream fis = openFileInput(filename);
@@ -103,7 +107,7 @@ public class SummaryActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        getRoute(extraFile);
     }//end readFile
 
     private void ReadFromPrefs() {
@@ -128,6 +132,20 @@ public class SummaryActivity extends AppCompatActivity {
         Log.d(TAG, "onClick: Clicked me");
         readFile();
       //  new FilesCreations().execute();
+    }
+
+    public ArrayList<LatLng> getRoute(String file)
+    {
+        Pattern pattern = Pattern.compile("([+-]?\\d*\\.?\\d+),([+-]?\\d*\\.?\\d+)");
+        Matcher matcher = pattern.matcher(file);
+        while(matcher.find())
+        {
+            double lat = Double.parseDouble(matcher.group(1));
+            double lng = Double.parseDouble(matcher.group(2));
+            points.add(new LatLng(lat,lng));
+        }
+        Log.d("points", points.toString());
+        return points;
     }
 
 
