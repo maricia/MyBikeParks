@@ -1,10 +1,14 @@
 package com.maricia.mybikeparks;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,20 +22,27 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SummaryActivity extends AppCompatActivity {
 
     final static String TAG = "SummaryActivity";
     TextView readFileTextView;  //readfile view
     TextView totalTimeTextView;  //total time view
+    TextView dateWalkTextView; //date view
     Button readfilebtn; //read file button
     String filename = "walkroutes"; //file name
     File file; //file for location
+    String theDate; //shared pref return
+    String walkTime; //shared pref return
+    private ArrayList<LatLng> points;
 
 
 
@@ -52,63 +63,42 @@ public class SummaryActivity extends AppCompatActivity {
         //get buttons, and check to see if walk file exists
         readfilebtn = this.findViewById(R.id.readfilebtn);
         readFileTextView = this.findViewById(R.id.readFileTextView);
+        readfilebtn.setEnabled(false);
     }
+
+
 
     public void checkForFile() {
         file = getBaseContext().getFileStreamPath(filename);
         Log.d(TAG, "readFile: fileName typeOf: " + file.getClass().getName());
-        if (file.exists())  readfilebtn.setEnabled(true);
-        else  readfilebtn.setEnabled(false);
+        if (file.exists()) { readfilebtn.setEnabled(true);}
+        else { readfilebtn.setEnabled(false);}
     }
 
     public void readFile(){
 
         String extraFile =""; //temp storage
+        points = new ArrayList<>();
         int i;
         try {
             FileInputStream fis = openFileInput(filename);
             while ((i = fis.read()) !=-1){
                //TODO convert String to Map<String,ListArray>
-               // extraFile = Character.toString((char) i).split(",");
-               // Log.d(TAG, "readFile: extraFile type of what:" + extraFile.getClass().getName());
-                //String[] TotalTime = Character.toString((char) i).split(",");
-               // Log.d(TAG, "readFile: " + extraFile);
                 extraFile = new StringBuilder().append(extraFile) + Character.toString((char) i);
-                //Character.toString((char) i).split("{");
-               // routeInfo.put("totalTime", ????);
-               // routeInfo.put("location", ????);
-               // List<String> arrayList = new ArrayList<String>(arrayList.asList(extraFiles.split(",")));
-               // readFileTextView.setText(extraFile[i]);
-            }
+                      }
             Log.d(TAG, "readFile: " + extraFile.getClass().getName());
             Map<Integer, String> routeInfo = new HashMap<>();
             String[] Time = extraFile.split("TotalTime=");
-
-            /*
-            String[] latlng = extraFile.split(":");
-
-            for(int j=0; j<latlng.length; j++){
-                String loc = String.valueOf(latlng.toString().split(","));
-                switch (loc){
-                    case "lat/lng":
-                        break;
-                    case "(":
-                        break;
-                }
-
-                double lat = ;
-                //int value = j;
-                routeInfo.put(j, LatLng[j]);
-            }
-            */
 
             Log.d(TAG, "readFile: *****" + Time.toString() +"*****" + String.valueOf(Time));
 
             readFileTextView = this.findViewById(R.id.readFileTextView);
             readFileTextView.setText(extraFile);
             totalTimeTextView = this.findViewById(R.id.totalTimeTextView);
-
-
+            dateWalkTextView = this.findViewById(R.id.dateWalkTextView);
+            ReadFromPrefs();
+            totalTimeTextView.setText(walkTime);
+            dateWalkTextView.setText(theDate);
             Toast.makeText(getBaseContext(), filename,Toast.LENGTH_LONG).show();
 
             fis.close();
@@ -117,20 +107,114 @@ public class SummaryActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
+        getRoute(extraFile);
     }//end readFile
 
+    private void ReadFromPrefs() {
+
+        // SharedPreferences sharedPref = this.getSharedPreferences( Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences("BikeParkMapStats",Context.MODE_PRIVATE);
+
+        String startLat = sharedPref.getString("myStartLat", "0");
+        String startLng = sharedPref.getString("myStartLon", "0");
+        theDate = sharedPref.getString("myActivityDate","0");
+        walkTime = sharedPref.getString("myStopTime", "0");
+
+        Log.d(TAG, "ReadFromPrefs: " + theDate + " " + startLat + " " + startLng + " " + walkTime);
+
+        //read from pref example
+        //String latitudeString = pref.getString("Latitude", "0");
+       // double latitude = Double.parseDouble(latitudeString);
+    }
 
 
     public void onClick(View v){
         Log.d(TAG, "onClick: Clicked me");
         readFile();
+      //  new FilesCreations().execute();
     }
 
-    private String setButton() {
-        readfilebtn.setEnabled(false);
-        return null;
+    public ArrayList<LatLng> getRoute(String file)
+    {
+        Pattern pattern = Pattern.compile("([+-]?\\d*\\.?\\d+),([+-]?\\d*\\.?\\d+)");
+        Matcher matcher = pattern.matcher(file);
+        while(matcher.find())
+        {
+            double lat = Double.parseDouble(matcher.group(1));
+            double lng = Double.parseDouble(matcher.group(2));
+            points.add(new LatLng(lat,lng));
+        }
+        Log.d("points", points.toString());
+        return points;
     }
 
+
+
+
+    /*
+    private class FilesCreations extends AsyncTask<Void, Void, String > {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            checkForFile();
+        }
+
+        public void checkForFile() {
+            file = getBaseContext().getFileStreamPath(filename);
+            Log.d(TAG, "checkForFile: fileName typeOf: ++++++" + file.getClass().getName());
+            if (file.exists())  readfilebtn.setEnabled(true);
+            else  readfilebtn.setEnabled(false);
+        }
+
+
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            readFile();
+            return null;
+        }
+
+
+        public void readFile(){
+
+            String extraFile =""; //temp storage
+            int i;
+            try {
+                Log.d(TAG, "readFile: ++++++++" + extraFile);
+                FileInputStream fis = openFileInput(filename);
+                while ((i = fis.read()) !=-1){
+                    //TODO convert String to Map<String,ListArray>
+                    extraFile = new StringBuilder().append(extraFile) + Character.toString((char) i);
+                }
+                Log.d(TAG, "readFile: ++++" + extraFile.getClass().getName());
+                Log.d(TAG, "readFile: ++++++" + extraFile);
+               // Map<Integer, String> routeInfo = new HashMap<>();
+               // String[] Time = extraFile.split("TotalTime=");
+
+                fis.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }//end readFile
+
+        @Override
+        protected void onPostExecute(String extraFile) {
+            super.onPostExecute(extraFile);
+
+           Log.d(TAG, "readFile: *****" + extraFile);
+
+            readFileTextView = readFileTextView.findViewById(R.id.totalTimeTextView);
+            readFileTextView.setText(extraFile);
+            totalTimeTextView = totalTimeTextView.findViewById(R.id.totalTimeTextView);
+
+            Toast.makeText(getBaseContext(), filename,Toast.LENGTH_LONG).show();
+
+        }
+    }
+    */
 }

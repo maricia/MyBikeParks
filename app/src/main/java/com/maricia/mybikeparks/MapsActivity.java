@@ -93,16 +93,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private PolylineOptions polylineOptions;
     private Polyline polyline;
     private LocationManager mLocationManager;
-    private long UPDATE_INTERVAL = 60000; // 1 minute
-    private long FASTEST_INTERVAL = 30000; // 30 Seconds
+    private long UPDATE_INTERVAL = 1000; // 1 minute 60000
+    private long FASTEST_INTERVAL = 1000; // 30 Seconds 30000
     private int count = 0; //count the number of saved files
     private Chronometer timeKeeper; //timer for activity
-    private String howLong; //activity time
-    public Integer startCount = 0;  //what activity
-    public static final  String BileParkMapStats_PREFERENCES = "BikeParkMapStats";  //pref file name
-    private String todaysDate;  //todays date
-    public String activityDate; //date for pref
-    boolean isStopping = false; //flag for prefsave
+    public String howLong; //activity time
+    public Integer startCount = 0;
+    public static final  String BileParkMapStats_PREFERENCES = "BikeParkMapStats";
+    private String todaysDate;
+    public String activityDate;
+    boolean isStopping = false;
     public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate";
 
 
@@ -282,6 +282,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         // User touched the dialog's positive button
         //SaveUserTracks();
+        Log.d(TAG, "onDialogPositiveClick: Look has points" + points);
         new FilesCreations().execute();
         //remove the path on the screen
         finishTracking();
@@ -577,7 +578,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         saveLocationToPreferences(latitude, longitude, isStopping);
         ArrayList<LatLng> myLocation = points;  //points
         DialogFragment newFragment = new SaveTrackDialogFragment();
-        newFragment.show(getFragmentManager(), "missiles");
+        newFragment.show(getFragmentManager(), "saveDialog");
         addnewOverlayhere(myLocation);
     }
 
@@ -615,9 +616,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             editor.commit();
         }
 
-        //read from pref example
-        //String latitudeString = pref.getString("Latitude", "0");
-        //double latitude = Double.parseDouble(latitudeString);
+
     }
 
 
@@ -664,10 +663,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Log.d(TAG, "onPreExecute: 1 ***********" + points.getClass().getName());
+            Log.d(TAG, "onPreExecute: 2 the points" + points);
+
             howLong =  timeKeeper.getText().toString();
             Toast.makeText(getApplicationContext(), "howLong: " + howLong, Toast.LENGTH_LONG).show();
             timeKeeper.stop();
-            Log.d(TAG, "onPreExecute: ***********" + points.getClass().getName());
+
         }
 
         private boolean fileExist(String filename){
@@ -688,7 +690,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 filename = "walkroutes";
             }
             */
-
+            Log.d(TAG, "fileNames: 3 *****" + filename);
            if(!fileExist(filename)){
                filename = "walkroutes";
            }
@@ -697,6 +699,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         private void saveUserTracks(){
 
+            Log.d(TAG, "saveUserTracks: 4 ******" + points);
             FileOutputStream ops;
             String filename = fileNames();
             Map<String, String> walktime = new HashMap<>();
@@ -710,6 +713,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //this file is located under files
             try {
                 t = String.valueOf(points);
+                Log.d(TAG, "saveUserTracks: 5 *****" + points);
                 walktime.put("TotalTime",howLong);
                 walktime.put("Routes", t);
                 ops = openFileOutput(filename, MODE_APPEND);
