@@ -2,13 +2,9 @@ package com.maricia.mybikeparks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,13 +17,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,11 +29,15 @@ public class SummaryActivity extends AppCompatActivity {
     TextView readFileTextView;  //readfile view
     TextView totalTimeTextView;  //total time view
     TextView dateWalkTextView; //date view
+    TextView speedWalkTextView;
+    TextView distanceWalkTextView;
     Button readfilebtn; //read file button
     String filename = "walkroutes"; //file name
     File file; //file for location
     String theDate; //shared pref return
     String walkTime; //shared pref return
+    String speed;//shared pref return
+    String distance; //shared pref return
     private ArrayList<LatLng> points;
 
 
@@ -67,7 +63,7 @@ public class SummaryActivity extends AppCompatActivity {
     }
 
 
-
+ 
     public void checkForFile() {
         file = getBaseContext().getFileStreamPath(filename);
         Log.d(TAG, "readFile: fileName typeOf: " + file.getClass().getName());
@@ -96,9 +92,14 @@ public class SummaryActivity extends AppCompatActivity {
             readFileTextView.setText(extraFile);
             totalTimeTextView = this.findViewById(R.id.totalTimeTextView);
             dateWalkTextView = this.findViewById(R.id.dateWalkTextView);
+            speedWalkTextView = this.findViewById(R.id.speedWalkTextView);
+            distanceWalkTextView = this.findViewById(R.id.distanceWalkTextView);
             ReadFromPrefs();
             totalTimeTextView.setText(walkTime);
             dateWalkTextView.setText(theDate);
+            speedWalkTextView.setText(speed);
+            distanceWalkTextView.setText(distance);
+
             Toast.makeText(getBaseContext(), filename,Toast.LENGTH_LONG).show();
 
             fis.close();
@@ -119,6 +120,8 @@ public class SummaryActivity extends AppCompatActivity {
         String startLng = sharedPref.getString("myStartLon", "0");
         theDate = sharedPref.getString("myActivityDate","0");
         walkTime = sharedPref.getString("myStopTime", "0");
+        speed = sharedPref.getString("myWalkSpeed", "0" );
+        distance = sharedPref.getString("myWalkDistance","0");
 
         Log.d(TAG, "ReadFromPrefs: " + theDate + " " + startLat + " " + startLng + " " + walkTime);
 
