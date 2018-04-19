@@ -674,10 +674,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //this happens at stop
             editor.putString(myStopLat, Double.valueOf(latitude).toString());
             editor.putString(myStopLon, Double.valueOf(longitude).toString());
-            String temp = Double.valueOf(walkDistance).toString(); //using this to trunicate the distance
-            editor.putString(mywalkDistance, temp.substring(0,temp.indexOf(".")+3));
-            temp = Double.valueOf(walkSpeed).toString();
-            editor.putString(myWalkSpeed, temp.substring(0,temp.indexOf(".")+3));
+            try
+            {
+                String temp = Double.valueOf(walkDistance).toString(); //using this to trunicate the distance
+                editor.putString(mywalkDistance, temp.substring(0,temp.indexOf(".")+3));
+                temp = Double.valueOf(walkSpeed).toString();
+                editor.putString(myWalkSpeed, temp.substring(0,temp.indexOf(".")+3));
+            }
+            catch (IndexOutOfBoundsException e)
+            {
+                editor.putString(mywalkDistance, "0.0");
+                editor.putString(myWalkSpeed, "0.0");
+            }
 
             howLong =  timeKeeper.getText().toString();
             //start time my always be 0
@@ -686,7 +694,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             editor.commit();
         }
 
- 
+
     }
 
 
