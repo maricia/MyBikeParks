@@ -50,7 +50,10 @@
             android:name=".AboutActivity"
             android:parentActivityName=".SummaryActivity" >
         </activity>
-
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".SummaryActivity" >
+        </activity>
     </application>
 
 </manifest>

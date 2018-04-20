@@ -181,7 +181,9 @@ public class SummaryActivity extends AppCompatActivity{
                 startActivity(intentAbout);
                 return true;
             case R.id.action_settings:
-                getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+                Intent intetSettings = new Intent(this, SettingsActivity.class);
+                startActivity(intetSettings);
+                //getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -1,13 +1,16 @@
 package com.maricia.mybikeparks;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
-public class SettingsFragment extends PreferenceFragment {
+public class SettingsFragment extends PreferenceFragment  {
 
     String theDate;
     String walkTime;
@@ -19,14 +22,10 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d(TAG, "onCreate: here now 1");
         //Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
-
-
     }
-
-
 
 
 
