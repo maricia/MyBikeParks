@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:divider="@android:color/holo_purple"
+    android:icon="@color/brightgreen">
+
+    <PreferenceCategory
+        android:key="Power_Menu"
+        android:title="Power Setting">
+
+
+        <SwitchPreference
+            android:background="@android:color/background_light"
+            android:defaultValue="On"
+            android:key="Power_preference"
+            android:title="Battery Saver" />
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:key="edit_text_preference_1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Edit text preference" />
+
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:key="Tracker"
+        android:title="Tracker Settings">
+
+
+        <SwitchPreference
+            android:defaultValue="On"
+            android:key="Tracker_preference"
+            android:title="Tracker Color" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

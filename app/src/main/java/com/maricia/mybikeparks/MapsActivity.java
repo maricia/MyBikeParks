@@ -15,17 +15,22 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -72,7 +77,7 @@ import java.util.Map;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, OnCameraMoveStartedListener,
         GoogleApiClient.OnConnectionFailedListener, PlaceSelectionListener,
-        LocationListener, SaveTrackDialogFragment.NoticeDialogListener {
+        LocationListener, SaveTrackDialogFragment.NoticeDialogListener{
 
     private GoogleMap mMap;                    //googlemap
     private GoogleApiClient mGoogleApiClient;  //googleApiclient
@@ -98,24 +103,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int count = 0; //count the number of saved files
     private Chronometer timeKeeper; //timer for activity
     public String howLong; //activity time
+    public double trackDistance;
     public Integer startCount = 0;
     public static final  String BileParkMapStats_PREFERENCES = "BikeParkMapStats";
     private String todaysDate;
     public String activityDate;
     boolean isStopping = false;
-    public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate";
+    boolean isWalking = false;
+    public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate"
+            ,myWalkSpeed = "myWalkSpeed",mywalkDistance="myWalkDistance";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+       // Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+     //   setSupportActionBar(toolbar);
         //google search bar
         addSearch();
         locationPermision();
         startMap();
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
     }//end onCreate
     /*
@@ -179,32 +188,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
       return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         switch (item.getItemId()){
+
             case R.id.action_activity:
                 Intent intentActiveSummary = new Intent(this, SummaryActivity.class);
                 startActivity(intentActiveSummary);
                 break;
-            case R.id.action_Stop:
-                stopTiming();
-                stopTracking();
-                break;
             case R.id.action_Start:
-                startTiming();
-                startTracking();
-                break;
-            case R.id.action_about:
-                Intent intentAbout =  new Intent (this, AboutActivity.class);
-                startActivity(intentAbout);
+                if(!isWalking) {
+                    item.setIcon(R.drawable.ic_directions_walk_black_24dp);
+                    isWalking=true;
+                    startTiming();
+                    startTracking();
+                    break;
+                 }else
+                {
+                    item.setIcon(R.drawable.ic_directions_walk_white_24dp);
+                    isWalking = false;
+                    stopTiming();
+                    stopTracking();
+                }
                 break;
         }
-       return super.onOptionsItemSelected(item);
+       return true;
     }
-
 
 
     @Override
@@ -239,6 +253,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Object dataTransfer[] = new Object[2];
         GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
 
+
+
+
         switch (v.getId()){//searchButton
 
             default:Toast.makeText(this,v.getId()+"", Toast.LENGTH_LONG).show();
@@ -250,7 +267,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 getNearbyPlacesData.execute(dataTransfer);
-                Toast.makeText(MapsActivity.this, "MTB Parks", Toast.LENGTH_LONG).show();
+                Toast.makeText(MapsActivity.this, "Parks", Toast.LENGTH_LONG).show();
                 break;
         }//end switch
     }
@@ -283,19 +300,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // User touched the dialog's positive button
         //SaveUserTracks();
         Log.d(TAG, "onDialogPositiveClick: Look has points" + points);
+        //saves new file in background
         new FilesCreations().execute();
         //remove the path on the screen
         finishTracking();
     }
 
-    public void addnewOverlayhere(ArrayList<LatLng> myLocation) {
-        //TODO add tracks overlay and make activity summary page
-        //open file
-        //save contents into variable
-        // read LatLng
-        // display on screen
-
-    }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
@@ -448,6 +458,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private double getHaversineDistance(LatLng previousLoc, LatLng loc)
+    {
+        //Math that i just looked up.
+        double oldLat = previousLoc.latitude;
+        double oldLong = previousLoc.longitude;
+        double newLat = loc.latitude;
+        double newLong = loc.longitude;
+
+        //earth radius in Miles
+        final double RADIUS = 3959;
+
+        //getting displacement
+        double deltaLat = Math.toRadians(newLat - oldLat);
+        double deltaLon = Math.toRadians(newLong - oldLong);
+
+        //converts the latitudes to radians
+        oldLat = Math.toRadians(oldLat);
+        newLat = Math.toRadians(newLat);
+
+        double a = Math.pow(Math.sin(deltaLat / 2),2) + Math.pow(Math.sin(deltaLon / 2),2) * Math.cos(oldLat) * Math.cos(newLat);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        return RADIUS * c;
+    }
+
 
     private void getLastKnownLocation() // Lets you get the current location with a single method call.
     {
@@ -562,39 +596,72 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    private int parseTime() //returns the number of elapsed seconds
+    {
+
+        String value = timeKeeper.getText().toString();
+        String [] parts = value.split(":");
+
+        // Wrong format, no value for you.
+        if(parts.length < 2 || parts.length > 3)
+            return 0;
+
+        int seconds = 0, minutes = 0, hours = 0;
+
+        if(parts.length == 2){
+            seconds = Integer.parseInt(parts[1]);
+            minutes = Integer.parseInt(parts[0]);
+        }
+        else if(parts.length == 3){
+            seconds = Integer.parseInt(parts[2]);
+            minutes = Integer.parseInt(parts[1]);
+            hours = Integer.parseInt(parts[0]);
+        }
+
+        return seconds + (minutes*60) + (hours*3600);
+    }
+
     private void recordPath(LatLng loc) // couple lines of code that draws users position over time
     {
+        LatLng previousLoc;
+        if (!points.isEmpty())
+        {
+            previousLoc = points.get(points.size()-1);
+            trackDistance += getHaversineDistance(previousLoc,loc);
+        }
         points.add(loc);
         polylineOptions.add(loc);
         polyline = mMap.addPolyline(polylineOptions);
-        Log.d(TAG, "recordPath: ****" + points);
 
     }
+
 
     private void stopTracking() //creates a Dialog box to get user's choice about what to do about the path traveled
     {
         if (!isTracking) return;
         isStopping = true;
-        saveLocationToPreferences(latitude, longitude, isStopping);
+        saveLocationToPreferences(latitude, longitude, isStopping ,trackDistance/parseTime()*3600,trackDistance);
         ArrayList<LatLng> myLocation = points;  //points
         DialogFragment newFragment = new SaveTrackDialogFragment();
         newFragment.show(getFragmentManager(), "saveDialog");
-        addnewOverlayhere(myLocation);
+
     }
 
     private void startTracking() // initialize everything needed for the recordPath Function
     {
         //maybe save to prefences here
-        saveLocationToPreferences(latitude, longitude, isStopping);
+        saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance);
         isTracking = true;
         points = new ArrayList<LatLng>();
+        trackDistance =0;
         polylineOptions = new PolylineOptions();
         polylineOptions.color(Color.BLUE);
         polylineOptions.width(5);
 
     }
    //save distance and time to Preferences
-    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping){
+   //high jacking this method cause this seems like where the action is happening
+    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping, double walkSpeed, double walkDistance){
 
         SharedPreferences sharedPref = this.getSharedPreferences(BileParkMapStats_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -604,11 +671,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             editor.putString(myStartLat, Double.valueOf(latitude).toString());
             editor.putString(myStartLon, Double.valueOf(longitude).toString());
             editor.putString(myActivityDate, activityDate); //date of activity
+            editor.putString(myWalkSpeed,Double.valueOf(walkSpeed).toString());
+            editor.putString(mywalkDistance, Double.valueOf(walkDistance).toString());
             editor.commit();
         }else {
             //this happens at stop
             editor.putString(myStopLat, Double.valueOf(latitude).toString());
             editor.putString(myStopLon, Double.valueOf(longitude).toString());
+            try
+            {
+                String temp = Double.valueOf(walkDistance).toString(); //using this to trunicate the distance
+                editor.putString(mywalkDistance, temp.substring(0,temp.indexOf(".")+3));
+                temp = Double.valueOf(walkSpeed).toString();
+                editor.putString(myWalkSpeed, temp.substring(0,temp.indexOf(".")+3));
+            }
+            catch (IndexOutOfBoundsException e)
+            {
+                editor.putString(mywalkDistance, "0.0");
+                editor.putString(myWalkSpeed, "0.0");
+            }
+
             howLong =  timeKeeper.getText().toString();
             //start time my always be 0
             //this may need to be converted to a different type later
@@ -626,6 +708,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
+        locationRequest.setSmallestDisplacement(80); //todo maybe this should be a preference toggle? Battery saver mode?
 
 
         // we build  a location settings request object using a builder based on the above
@@ -715,6 +798,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 t = String.valueOf(points);
                 Log.d(TAG, "saveUserTracks: 5 *****" + points);
                 walktime.put("TotalTime",howLong);
+                walktime.put("Distance", ""+trackDistance);
+                walktime.put("Speed",trackDistance/(parseTime())*3600+"");
                 walktime.put("Routes", t);
                 ops = openFileOutput(filename, MODE_APPEND);
                 //writing a string, "walktime" to the "walkroutes" file

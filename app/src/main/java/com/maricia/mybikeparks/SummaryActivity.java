@@ -1,15 +1,14 @@
 package com.maricia.mybikeparks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,28 +20,30 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SummaryActivity extends AppCompatActivity {
+//
+public class SummaryActivity extends AppCompatActivity{
 
     final static String TAG = "SummaryActivity";
     TextView readFileTextView;  //readfile view
     TextView totalTimeTextView;  //total time view
     TextView dateWalkTextView; //date view
+    TextView speedWalkTextView;
+    TextView distanceWalkTextView;
     Button readfilebtn; //read file button
     String filename = "walkroutes"; //file name
     File file; //file for location
-    String theDate; //shared pref return
-    String walkTime; //shared pref return
+    public static String theDate; //shared pref return
+    public static String walkTime; //shared pref return
+    public static String speed;//shared pref return
+    public static String distance; //shared pref return
     private ArrayList<LatLng> points;
+    public static String startLat;
 
 
 
@@ -51,11 +52,12 @@ public class SummaryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
         setbuttons();  //set button
         checkForFile();  //check for walkroute file
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
     }//end onCreate
 
@@ -67,10 +69,10 @@ public class SummaryActivity extends AppCompatActivity {
     }
 
 
-
+ 
     public void checkForFile() {
         file = getBaseContext().getFileStreamPath(filename);
-        Log.d(TAG, "readFile: fileName typeOf: " + file.getClass().getName());
+       // Log.d(TAG, "readFile: fileName typeOf: " + file.getClass().getName());
         if (file.exists()) { readfilebtn.setEnabled(true);}
         else { readfilebtn.setEnabled(false);}
     }
@@ -96,9 +98,15 @@ public class SummaryActivity extends AppCompatActivity {
             readFileTextView.setText(extraFile);
             totalTimeTextView = this.findViewById(R.id.totalTimeTextView);
             dateWalkTextView = this.findViewById(R.id.dateWalkTextView);
+            speedWalkTextView = this.findViewById(R.id.speedWalkTextView);
+            distanceWalkTextView = this.findViewById(R.id.distanceWalkTextView);
+
             ReadFromPrefs();
             totalTimeTextView.setText(walkTime);
             dateWalkTextView.setText(theDate);
+            speedWalkTextView.setText(speed);
+            distanceWalkTextView.setText(distance);
+
             Toast.makeText(getBaseContext(), filename,Toast.LENGTH_LONG).show();
 
             fis.close();
@@ -110,15 +118,18 @@ public class SummaryActivity extends AppCompatActivity {
         getRoute(extraFile);
     }//end readFile
 
-    private void ReadFromPrefs() {
+    public void ReadFromPrefs() {
 
         // SharedPreferences sharedPref = this.getSharedPreferences( Context.MODE_PRIVATE);
         SharedPreferences sharedPref = this.getSharedPreferences("BikeParkMapStats",Context.MODE_PRIVATE);
+       // SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences().
 
-        String startLat = sharedPref.getString("myStartLat", "0");
+        startLat = sharedPref.getString("myStartLat", "0");
         String startLng = sharedPref.getString("myStartLon", "0");
         theDate = sharedPref.getString("myActivityDate","0");
         walkTime = sharedPref.getString("myStopTime", "0");
+        speed = sharedPref.getString("myWalkSpeed", "0" );
+        distance = sharedPref.getString("myWalkDistance","0");
 
         Log.d(TAG, "ReadFromPrefs: " + theDate + " " + startLat + " " + startLng + " " + walkTime);
 
@@ -148,7 +159,29 @@ public class SummaryActivity extends AppCompatActivity {
         return points;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_summary_settings, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch (item.getItemId()){
+           case R.id.action_about:
+                Intent intentAbout =  new Intent (this, AboutActivity.class);
+                startActivity(intentAbout);
+                break;
+            case R.id.action_settings:
+                getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+                break;
+        }
+        return true;
+    }
 
 
     /*

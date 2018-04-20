@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Just Another Park Finder</string>
+    <string name="app_name">Park Walker</string>
     <string name="title_activity_maps">Bike Park Map</string>
     <string name="title_activity_main">MainActivity</string>
 
