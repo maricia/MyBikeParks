@@ -194,20 +194,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-
         switch (item.getItemId()){
-
             case R.id.action_activity:
                 Intent intentActiveSummary = new Intent(this, SummaryActivity.class);
                 startActivity(intentActiveSummary);
-                break;
+                return true;
             case R.id.action_Start:
                 if(!isWalking) {
                     item.setIcon(R.drawable.ic_directions_walk_black_24dp);
                     isWalking=true;
                     startTiming();
                     startTracking();
-                    break;
+                    return true;
                  }else
                 {
                     item.setIcon(R.drawable.ic_directions_walk_white_24dp);
@@ -215,9 +213,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     stopTiming();
                     stopTracking();
                 }
-                break;
+                return true;
         }
-       return true;
+       return super.onOptionsItemSelected(item);
     }
 
 
@@ -825,7 +823,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             super.onPostExecute(s);
             Toast.makeText(getApplicationContext(), "file made ", Toast.LENGTH_LONG).show();
         }
-    }
+    }//end
+
+
 
 
 

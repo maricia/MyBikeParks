@@ -51,12 +51,15 @@ public class SummaryActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_summary);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+        setContentView(R.layout.content_summary);
+        /* custom bar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        */
         setbuttons();  //set button
         checkForFile();  //check for walkroute file
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
 
     }//end onCreate
@@ -163,6 +166,7 @@ public class SummaryActivity extends AppCompatActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_summary_settings, menu);
+        Log.d(TAG, "onCreateOptionsMenu: here now 1");
         return true;
     }
 
@@ -175,12 +179,12 @@ public class SummaryActivity extends AppCompatActivity{
            case R.id.action_about:
                 Intent intentAbout =  new Intent (this, AboutActivity.class);
                 startActivity(intentAbout);
-                break;
+                return true;
             case R.id.action_settings:
                 getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
-                break;
+                return true;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
 

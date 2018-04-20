@@ -43,11 +43,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AboutActivity"
-            android:parentActivityName=".SummaryActivity" />
-        <activity
             android:name=".SummaryActivity"
-            android:parentActivityName=".MapsActivity" />
+            android:parentActivityName=".MapsActivity">
+        </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:parentActivityName=".SummaryActivity" >
+        </activity>
 
     </application>
 
