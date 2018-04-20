@@ -15,17 +15,22 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -72,7 +77,7 @@ import java.util.Map;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, OnCameraMoveStartedListener,
         GoogleApiClient.OnConnectionFailedListener, PlaceSelectionListener,
-        LocationListener, SaveTrackDialogFragment.NoticeDialogListener {
+        LocationListener, SaveTrackDialogFragment.NoticeDialogListener{
 
     private GoogleMap mMap;                    //googlemap
     private GoogleApiClient mGoogleApiClient;  //googleApiclient
@@ -104,6 +109,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String todaysDate;
     public String activityDate;
     boolean isStopping = false;
+    boolean isWalking = false;
     public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate"
             ,myWalkSpeed = "myWalkSpeed",mywalkDistance="myWalkDistance";
 
@@ -112,12 +118,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+       // Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+     //   setSupportActionBar(toolbar);
         //google search bar
         addSearch();
         locationPermision();
         startMap();
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
     }//end onCreate
     /*
@@ -181,36 +188,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
       return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         switch (item.getItemId()){
+
             case R.id.action_activity:
                 Intent intentActiveSummary = new Intent(this, SummaryActivity.class);
                 startActivity(intentActiveSummary);
                 break;
-            case R.id.action_Stop:
-                if(!isTracking) break; //stop button disabled when user is not tracking
-                stopTiming();
-                stopTracking();
-                break;
             case R.id.action_Start:
-                if(isTracking) break; //start button disabled when user is tracking
-                startTiming();
-                startTracking();
+                if(!isWalking) {
+                    item.setIcon(R.drawable.ic_directions_walk_black_24dp);
+                    isWalking=true;
+                    startTiming();
+                    startTracking();
+                    break;
+                 }else
+                {
+                    item.setIcon(R.drawable.ic_directions_walk_white_24dp);
+                    isWalking = false;
+                    stopTiming();
+                    stopTracking();
+                }
                 break;
-            case R.id.action_about:
-                Intent intentAbout =  new Intent (this, AboutActivity.class);
-                startActivity(intentAbout);
-                break;
-            case R.id.file_data:
-                Toast.makeText(this," "+ trackDistance,Toast.LENGTH_LONG).show();
         }
-       return super.onOptionsItemSelected(item);
+       return true;
     }
-
 
 
     @Override
@@ -245,6 +253,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Object dataTransfer[] = new Object[2];
         GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
 
+
+
+
         switch (v.getId()){//searchButton
 
             default:Toast.makeText(this,v.getId()+"", Toast.LENGTH_LONG).show();
@@ -256,7 +267,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 getNearbyPlacesData.execute(dataTransfer);
-                Toast.makeText(MapsActivity.this, "MTB Parks", Toast.LENGTH_LONG).show();
+                Toast.makeText(MapsActivity.this, "Parks", Toast.LENGTH_LONG).show();
                 break;
         }//end switch
     }
@@ -289,19 +300,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // User touched the dialog's positive button
         //SaveUserTracks();
         Log.d(TAG, "onDialogPositiveClick: Look has points" + points);
+        //saves new file in background
         new FilesCreations().execute();
         //remove the path on the screen
         finishTracking();
     }
 
-    public void addnewOverlayhere(ArrayList<LatLng> myLocation) {
-        //TODO add tracks overlay and make activity summary page
-        //open file
-        //save contents into variable
-        // read LatLng
-        // display on screen
-
-    }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
@@ -640,7 +644,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ArrayList<LatLng> myLocation = points;  //points
         DialogFragment newFragment = new SaveTrackDialogFragment();
         newFragment.show(getFragmentManager(), "saveDialog");
-        addnewOverlayhere(myLocation);
+
     }
 
     private void startTracking() // initialize everything needed for the recordPath Function

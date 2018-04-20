@@ -44,16 +44,11 @@
         </activity>
         <activity
             android:name=".AboutActivity"
-            android:parentActivityName=".MapsActivity" />
+            android:parentActivityName=".SummaryActivity" />
         <activity
             android:name=".SummaryActivity"
-            android:label="@string/title_activity_summary"
-            android:parentActivityName=".MapsActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.maricia.mybikeparks.MapsActivity" />
-        </activity>
+            android:parentActivityName=".MapsActivity" />
+
     </application>
 
 </manifest>

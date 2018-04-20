@@ -3,26 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.maricia.mybikeparks.MapsActivity">
-
-   <item
+    <item
+        android:id="@+id/action_Start"
+        android:icon="@drawable/ic_directions_walk_white_24dp"
+        android:title="Start Tracking"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_activity"
-        android:title="Activity"
+        android:title="Tracking Summary"
         app:showAsAction="never" />
-  <item
-      android:id="@+id/action_Start"
-      android:title="Start"
-      app:showAsAction="never" />
-  <item
-      android:id="@+id/action_Stop"
-      android:title="Stop"
-      app:showAsAction="never" />
-    <item
-        android:id="@+id/action_about"
-        android:title="About"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/file_data"
-        android:title="test"
-        app:showAsAction="never" />
+
+
 
 </menu>

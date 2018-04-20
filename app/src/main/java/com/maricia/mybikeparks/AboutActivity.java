@@ -25,15 +25,17 @@ public class AboutActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
+        TextView title = this.findViewById(R.id.title);
         TextView tpversion = this.findViewById(R.id.tpversion);
-        TextView tpauthor = this.findViewById(R.id.tpauthor);
-        TextView tpauthor2 = this.findViewById(R.id.tpauthor2);
-        TextView tpauthor3 = this.findViewById(R.id.tpauthor3);
-        TextView tpauthor4 = this.findViewById(R.id.tpauthor4);
+        TextView tpauthor = this.findViewById(R.id.authorTextView2);
+        TextView tpauthor2 = this.findViewById(R.id.authorTextView);
+        TextView tpauthor3 = this.findViewById(R.id.authorTextView3);
+        TextView tpauthor4 = this.findViewById(R.id.authorTextView4);
 
         tpversion.setText(MessageFormat.format("version:{0} Build: {1}",versionName,versionCode));
 
-        tpauthor.setText(MessageFormat.format("Authors: {0} ", String.format("Maricia Alleman")));
+        title.setText(String.format("Authors:"));
+        tpauthor.setText(String.format("Maricia Alleman"));
         tpauthor2.setText(String.format("Joe Wolfe"));
         tpauthor3.setText(String.format("LaTosha"));
         tpauthor4.setText(String.format("Judy Carmody"));
