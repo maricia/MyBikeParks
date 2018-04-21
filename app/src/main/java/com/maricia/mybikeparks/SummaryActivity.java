@@ -39,6 +39,7 @@ public class SummaryActivity extends AppCompatActivity{
     String filename = "walkroutes"; //file name
     File file; //file for location
     private ArrayList<LatLng> points;
+    boolean hasClicked = false;
 
 
     @Override
@@ -47,6 +48,7 @@ public class SummaryActivity extends AppCompatActivity{
         setContentView(R.layout.content_summary);
         setbuttons();  //set button
         checkForFile();  //check for walkroute file
+
 
     }//end onCreate
 
@@ -62,7 +64,10 @@ public class SummaryActivity extends AppCompatActivity{
     public void checkForFile() {
         file = getBaseContext().getFileStreamPath(filename);
        // Log.d(TAG, "readFile: fileName typeOf: " + file.getClass().getName());
-        if (file.exists()) { readfilebtn.setEnabled(true);}
+        if (file.exists()) {
+            readfilebtn.setEnabled(true);
+            readFile();
+        }
         else { readfilebtn.setEnabled(false);}
     }
 
@@ -82,6 +87,7 @@ public class SummaryActivity extends AppCompatActivity{
 
             getTextViews(extraFile);
             setTextViews();
+            if (hasClicked) readFileTextView.setText(extraFile);
             Toast.makeText(getBaseContext(), filename,Toast.LENGTH_LONG).show();
 
             fis.close();
@@ -105,7 +111,7 @@ public class SummaryActivity extends AppCompatActivity{
     private void getTextViews(String extraFile) {
 
         readFileTextView = this.findViewById(R.id.readFileTextView);
-        readFileTextView.setText(extraFile);
+        //readFileTextView.setText(extraFile);
         totalTimeTextView = this.findViewById(R.id.totalTimeTextView);
         dateWalkTextView = this.findViewById(R.id.dateWalkTextView);
         speedWalkTextView = this.findViewById(R.id.speedWalkTextView);
@@ -115,8 +121,10 @@ public class SummaryActivity extends AppCompatActivity{
 
 
     public void onClick(View v){
+        hasClicked=true;
         Log.d(TAG, "onClick: Clicked me");
         readFile();
+
       //  new FilesCreations().execute();
     }
 
