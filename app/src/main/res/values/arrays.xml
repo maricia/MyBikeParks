@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="entries_color_list_preference">
+        <item>RED</item>
+        <item>BLUE</item>
+        <item>YELLOW</item>
+        <item>ORANGE</item>
+        <item>PURPLE</item>
+        <item>GREEN</item>
+    </string-array>
+
+    <string-array name="values_color_list_preference">
+        <item>Color.RED</item>
+        <item>Color.BLUE</item>
+        <item>Color.YELLOW</item>
+        <item>Color.ORANGE</item>
+        <item>Color.PURPLE</item>
+        <item>Color.GREEN</item>
+    </string-array>
+
+
+    <string-array name="entries_weight_list_preference">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+
+
+
+    <string-array name="marker_color_list_preference">
+        <item>RED</item>
+        <item>BLUE</item>
+        <item>YELLOW</item>
+        <item>ORANGE</item>
+        <item>PURPLE</item>
+        <item>GREEN</item>
+    </string-array>
+
+    <string-array name="values_marker_color_list_preference">
+        <item>BitmapDescriptorFactory.HUE_RED</item>
+        <item>BitmapDescriptorFactory.HUE_BLUE</item>
+        <item>BitmapDescriptorFactory.HUE_YELLOW</item>
+        <item>BitmapDescriptorFactory.HUE_ORANGE</item>
+        <item>BitmapDescriptorFactory.HUE_VIOLET</item>
+        <item>BitmapDescriptorFactory.HUE_GREEN</item>
+    </string-array>
+</resources>

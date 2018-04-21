@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewDebug;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -111,8 +112,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     boolean isStopping = false;
     boolean isWalking = false;
     public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate"
-            ,myWalkSpeed = "myWalkSpeed",mywalkDistance="myWalkDistance";
-
+            ,myWalkSpeed = "myWalkSpeed",mywalkDistance="myWalkDistance", myLineWeight = "myLineWeight", myColorValue = "myColorValue",
+            myParkMarkerColor="myParkMarkerColor", myMarkerColor="myMarkerColor";
+   private Integer lineWeight = 5; //this is for preferences
+   private Integer colorValue = Color.BLUE; //this is for preferences
+   private Float markerColor = BitmapDescriptorFactory.HUE_RED;
+   private Float parkMarkerColor = BitmapDescriptorFactory.HUE_GREEN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -250,12 +255,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //check what button is being pressed
         Object dataTransfer[] = new Object[2];
         GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-
-
-
-
         switch (v.getId()){//searchButton
-
             default:Toast.makeText(this,v.getId()+"", Toast.LENGTH_LONG).show();
             case R.id.parksButton:
                 isFollowing = false;
@@ -579,8 +579,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         startCount ++;
     }
     public void stopTiming() {
-        //  howLong =  timeKeeper.getText().toString();
-        //  Toast.makeText(this, "howLong: " + howLong, Toast.LENGTH_LONG).show();
         timeKeeper.stop();
 
     }
@@ -638,7 +636,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         if (!isTracking) return;
         isStopping = true;
-        saveLocationToPreferences(latitude, longitude, isStopping ,trackDistance/parseTime()*3600,trackDistance);
+        saveLocationToPreferences(latitude, longitude, isStopping ,trackDistance/parseTime()*3600,trackDistance, lineWeight, colorValue, markerColor);
         ArrayList<LatLng> myLocation = points;  //points
         DialogFragment newFragment = new SaveTrackDialogFragment();
         newFragment.show(getFragmentManager(), "saveDialog");
@@ -648,22 +646,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void startTracking() // initialize everything needed for the recordPath Function
     {
         //maybe save to prefences here
-        saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance);
+        saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance, lineWeight, colorValue,markerColor );
         isTracking = true;
         points = new ArrayList<LatLng>();
         trackDistance =0;
         polylineOptions = new PolylineOptions();
-        polylineOptions.color(Color.BLUE);
-        polylineOptions.width(5);
+        polylineOptions.color(colorValue);
+        polylineOptions.width(lineWeight);
 
     }
    //save distance and time to Preferences
    //high jacking this method cause this seems like where the action is happening
-    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping, double walkSpeed, double walkDistance){
+    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping, double walkSpeed, double walkDistance, int lineWeight, int colorValues, float locationMarkerColor){
 
-        SharedPreferences sharedPref = this.getSharedPreferences(BileParkMapStats_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences("com.maricia.mybikeparks_preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        Log.d(TAG, "saveLocationToPreferences: howlong" + howLong);
         activityDate = getCurrentDate();
         if(!isStopping){
             editor.putString(myStartLat, Double.valueOf(latitude).toString());
@@ -671,6 +668,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             editor.putString(myActivityDate, activityDate); //date of activity
             editor.putString(myWalkSpeed,Double.valueOf(walkSpeed).toString());
             editor.putString(mywalkDistance, Double.valueOf(walkDistance).toString());
+            editor.putString(myLineWeight, Integer.valueOf(lineWeight).toString());
+            editor.putString(myColorValue, Integer.valueOf(colorValue).toString());
+            editor.putString(myMarkerColor, Float.valueOf(markerColor).toString());
             editor.commit();
         }else {
             //this happens at stop
@@ -744,34 +744,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Log.d(TAG, "onPreExecute: 1 ***********" + points.getClass().getName());
-            Log.d(TAG, "onPreExecute: 2 the points" + points);
-
             howLong =  timeKeeper.getText().toString();
-            Toast.makeText(getApplicationContext(), "howLong: " + howLong, Toast.LENGTH_LONG).show();
+           // Toast.makeText(getApplicationContext(), "howLong: " + howLong, Toast.LENGTH_LONG).show();
             timeKeeper.stop();
 
         }
 
         private boolean fileExist(String filename){
-           // Log.d(TAG, "FilesCreations: " + filename);
             File file = getBaseContext().getFileStreamPath(filename);
             return file.exists();
         }
 
         private String fileNames(){
             String filename = "walkroutes";
-            //if file exists already and adds one
-           /*
-            if(fileExist(filename)){
-                count++;
-                filename = new StringBuilder().append(filename).append(count).toString();
-                Log.d(TAG, "FilesCreations: " + filename);
-            }else{
-                filename = "walkroutes";
-            }
-            */
-            Log.d(TAG, "fileNames: 3 *****" + filename);
            if(!fileExist(filename)){
                filename = "walkroutes";
            }
@@ -780,13 +765,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         private void saveUserTracks(){
 
-            Log.d(TAG, "saveUserTracks: 4 ******" + points);
             FileOutputStream ops;
             String filename = fileNames();
             Map<String, String> walktime = new HashMap<>();
-            //Map<Integer, String> walkingPoints = new HashMap<>();
             String t = "";
-
             //save locations hopefully I will be able to do a layout on the map
             //TODO display map overlay using saves latlng in saved file
             //keep track of everytime you push start - this would be the number of locations
@@ -794,7 +776,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //this file is located under files
             try {
                 t = String.valueOf(points);
-                Log.d(TAG, "saveUserTracks: 5 *****" + points);
                 walktime.put("TotalTime",howLong);
                 walktime.put("Distance", ""+trackDistance);
                 walktime.put("Speed",trackDistance/(parseTime())*3600+"");
@@ -802,8 +783,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 ops = openFileOutput(filename, MODE_APPEND);
                 //writing a string, "walktime" to the "walkroutes" file
                 ops.write(walktime.toString().getBytes());
-                //walkingPoints.put(startCount,t);
-                //ops.write(walkingPoints.toString().getBytes());
                 ops.close();
             } catch (IOException e)
             {
@@ -821,7 +800,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Toast.makeText(getApplicationContext(), "file made ", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "file made ", Toast.LENGTH_LONG).show();
         }
     }//end
 

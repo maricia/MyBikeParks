@@ -3,11 +3,12 @@ package com.maricia.mybikeparks;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends AppCompatActivity {
 
     final static String TAG = "SettingsActivity";
 
@@ -16,7 +17,7 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
     }
-
+/* do not need this if you do not have a menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -42,6 +43,6 @@ public class SettingsActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-
+*/
 
 }

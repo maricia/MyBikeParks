@@ -3,15 +3,6 @@
     android:divider="@android:color/holo_purple"
     android:icon="@color/brightgreen"
     android:defaultValue="true" >
-    <!--
-        <ListPreference
-            android:dependency="BikeParkMapStats"
-            android:key="BikeParkMapStats"
-            android:title="myActivityDate">
-
-        </ListPreferenc   </PreferenceScreen>
-    -->
-
 
         <PreferenceCategory
             android:key="Power_Menu"
@@ -20,15 +11,9 @@
 
             <SwitchPreference
                 android:background="@android:color/background_light"
-                android:defaultValue="On"
+                android:defaultValue="true"
                 android:key="Power_preference"
                 android:title="Battery Saver" />
-            <EditTextPreference
-                android:defaultValue="Default value"
-                android:key="edit_text_preference_1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="Edit text preference" />
 
 
         </PreferenceCategory>
@@ -36,16 +21,50 @@
 
         <PreferenceCategory
             android:key="Tracker"
-            android:title="Tracker Settings">
+            android:title="Path Settings">
 
+            <ListPreference
+                android:defaultValue="Color.BLUE"
+                android:dialogTitle="Path Color"
+                android:entries="@array/entries_color_list_preference"
+                android:entryValues="@array/values_color_list_preference"
+                android:key="color_preference"
+                android:summary="change the color of your path"
+                android:title="Path Color" />
 
-            <SwitchPreference
-                android:defaultValue="On"
-                android:key="Tracker_preference"
-                android:title="Tracker Color" />
-
-
+            <ListPreference
+                android:defaultValue="5"
+                android:dialogTitle="Path line weight"
+                android:entries="@array/entries_weight_list_preference"
+                android:entryValues="@array/entries_weight_list_preference"
+                android:key="myLineWeight"
+                android:summary="change the line weight of your path"
+                android:title="Path weight" />
         </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:key="MarkerColors"
+        android:title="Marker Colors">
+
+        <ListPreference
+            android:defaultValue="BitmapDescriptorFactory.HUE_GREEN"
+            android:dialogTitle="Park Marker Color"
+            android:entries="@array/marker_color_list_preference"
+            android:entryValues="@array/values_marker_color_list_preference"
+            android:key="myParkMarkerColor"
+            android:summary="change the color of the park marker"
+            android:title="Park Marker Color" />
+
+        <ListPreference
+            android:defaultValue="BitmapDescriptorFactory.HUE_RED"
+            android:dialogTitle="Your Location Marker Color"
+            android:entries="@array/marker_color_list_preference"
+            android:entryValues="@array/values_marker_color_list_preference"
+            android:key="myMarkerColor"
+            android:summary="change the color of your location marker"
+            android:title="Location Marker" />
+    </PreferenceCategory>
 
 
 
