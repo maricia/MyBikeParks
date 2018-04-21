@@ -115,8 +115,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate"
             ,myWalkSpeed = "myWalkSpeed",mywalkDistance="myWalkDistance", myLineWeight = "myLineWeight", myColorValue = "myColorValue",
             myParkMarkerColor="myParkMarkerColor", myMarkerColor="myMarkerColor";
-   private Integer lineWeight = 5; //this is for preferences
-   private Integer colorValue = Color.BLUE; //this is for preferences
+   private String lineWeight = "5"; //this is for preferences
+   private String colorValue = "Color.BLUE"; //this is for preferences
    private Float markerColor = BitmapDescriptorFactory.HUE_RED;
    private Float parkMarkerColor = BitmapDescriptorFactory.HUE_GREEN;
 
@@ -612,7 +612,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         if (!isTracking) return;
         isStopping = true;
-        saveLocationToPreferences(latitude, longitude, isStopping ,trackDistance/parseTime()*3600,trackDistance, lineWeight, colorValue, markerColor);
+        saveLocationToPreferences(latitude, longitude, isStopping ,trackDistance/parseTime()*3600,trackDistance, markerColor);//colorValue, lineWeight
         ArrayList<LatLng> myLocation = points;  //points
         DialogFragment newFragment = new SaveTrackDialogFragment();
         newFragment.show(getFragmentManager(), "saveDialog");
@@ -622,22 +622,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void startTracking() // initialize everything needed for the recordPath Function
     {
         //maybe save to prefences here
-        saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance, lineWeight, colorValue,markerColor );
-        //this needs to be saved in prefrences as an Integers
-        //colorValue = Integer.valueOf(ReadFromPrefs.readPrefs("color_preference", this));
-        Log.d(TAG, "*******startTracking: color:" + colorValue);
+        saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance,markerColor );//, colorValue, lineWeight
+        //TODO  this needs to be saved in prefrences as an Integers and as a float not a string
+        colorValue = ReadFromPrefs.readPrefs("color_preference", this);
+        lineWeight = ReadFromPrefs.readPrefs("myLineWeight", this);
+        Log.d(TAG, "*******startTracking: color:" + colorValue.getClass().getName() + colorValue);
+        Log.d(TAG, "startTracking: +++++++++lineweight:" + lineWeight.getClass().getName() + lineWeight);
         isTracking = true;
         points = new ArrayList<LatLng>();
         trackDistance =0;
         polylineOptions = new PolylineOptions();
         polylineOptions.color(Color.BLUE);
+//        polylineOptions.color(Integer.parseInt(colorValue));
         polylineOptions.width(5);
+  //      polylineOptions.width(Float.parseFloat(lineWeight));
 
     }
    //save distance and time to Preferences
    //high jacking this method cause this seems like where the action is happening
-    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping, double walkSpeed, double walkDistance, int lineWeight, int colorValues, float locationMarkerColor){
-
+    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping, double walkSpeed, double walkDistance , float locationMarkerColor){
+        //int colorValues, , int lineWeight
         SharedPreferences sharedPref = this.getSharedPreferences("com.maricia.mybikeparks_preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         activityDate = getCurrentDate();
@@ -648,8 +652,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             editor.putString(myWalkSpeed,Double.valueOf(walkSpeed).toString());
             editor.putString(mywalkDistance, Double.valueOf(walkDistance).toString());
             editor.putString(myLineWeight, Integer.valueOf(lineWeight).toString());
-            editor.putString(myColorValue, Integer.valueOf(colorValue).toString());
-            editor.putString(myMarkerColor, Float.valueOf(markerColor).toString());
+         //   editor.putString(myColorValue, Integer.valueOf(colorValue).toString());
+         //   editor.putString(myMarkerColor, Float.valueOf(markerColor).toString());
             editor.commit();
         }else {
             //this happens at stop
