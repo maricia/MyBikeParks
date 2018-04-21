@@ -25,10 +25,9 @@
 
             <ListPreference
                 android:defaultValue="Color.BLUE"
-                android:dialogTitle="Path Color"
-                android:entries="@array/entries_color_list_preference"
-                android:entryValues="@array/values_color_list_preference"
-                android:key="color_preference"
+                android:entries="@array/values_color_list"
+                android:entryValues="@array/values_color_list"
+                android:key="myLineColor"
                 android:summary="change the color of your path"
                 android:title="Path Color" />
 

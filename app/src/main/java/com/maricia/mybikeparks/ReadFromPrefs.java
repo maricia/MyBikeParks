@@ -3,7 +3,6 @@ package com.maricia.mybikeparks;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -25,7 +24,7 @@ public class ReadFromPrefs {
 
 
 
-    public static String readPrefs( String key, Context context){
+    public static String readPrefs(String key, Context context){
          SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context);
           return sharedPref.getString(key, null);
     }

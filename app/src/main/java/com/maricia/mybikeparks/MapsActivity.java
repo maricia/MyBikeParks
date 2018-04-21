@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.SweepGradient;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -75,6 +77,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.graphics.Color.parseColor;
+import static com.maricia.mybikeparks.ReadFromPrefs.lineWeight;
+import static com.maricia.mybikeparks.ReadFromPrefs.readPrefs;
+
 //FragmentActivity
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, OnCameraMoveStartedListener,
@@ -112,13 +118,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public String activityDate;
     boolean isStopping = false;
     boolean isWalking = false;
-    public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate"
-            ,myWalkSpeed = "myWalkSpeed",mywalkDistance="myWalkDistance", myLineWeight = "myLineWeight", myColorValue = "myColorValue",
+    public static final String myStartLat = "myStartLat", myStopLat = "myStopLat",myStartLon = "myStartLon",myStopLon = "myStopLon",
+            myStartTime = "myStartTime",myStopTime = "myStopTime",myActivityDate = "myActivityDate"
+            ,myWalkSpeed = "myWalkSpeed",mywalkDistance="myWalkDistance",
+            myLineWeight = "myLineWeight", myColorValue = "myColorValue",
             myParkMarkerColor="myParkMarkerColor", myMarkerColor="myMarkerColor";
-   private String lineWeight = "5"; //this is for preferences
-   private String colorValue = "Color.BLUE"; //this is for preferences
-   private Float markerColor = BitmapDescriptorFactory.HUE_RED;
-   private Float parkMarkerColor = BitmapDescriptorFactory.HUE_GREEN;
+    private Float markerColor = BitmapDescriptorFactory.HUE_RED;
+    private Float parkMarkerColor = BitmapDescriptorFactory.HUE_GREEN;
+    public String lineWeight;
+    public String colorValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -612,7 +620,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         if (!isTracking) return;
         isStopping = true;
-        saveLocationToPreferences(latitude, longitude, isStopping ,trackDistance/parseTime()*3600,trackDistance, markerColor);//colorValue, lineWeight
+        saveLocationToPreferences(latitude, longitude, isStopping ,trackDistance/parseTime()*3600,trackDistance );//colorValue, lineWeightmarkerColor, lineWeight, colorValue
         ArrayList<LatLng> myLocation = points;  //points
         DialogFragment newFragment = new SaveTrackDialogFragment();
         newFragment.show(getFragmentManager(), "saveDialog");
@@ -622,25 +630,91 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void startTracking() // initialize everything needed for the recordPath Function
     {
         //maybe save to prefences here
-        saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance,markerColor );//, colorValue, lineWeight
+        saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance );//, colorValue, lineWeightlineWeight,colorValue,markerColor
         //TODO  this needs to be saved in prefrences as an Integers and as a float not a string
-        colorValue = ReadFromPrefs.readPrefs("color_preference", this);
-        lineWeight = ReadFromPrefs.readPrefs("myLineWeight", this);
-        Log.d(TAG, "*******startTracking: color:" + colorValue.getClass().getName() + colorValue);
-        Log.d(TAG, "startTracking: +++++++++lineweight:" + lineWeight.getClass().getName() + lineWeight);
+
         isTracking = true;
         points = new ArrayList<LatLng>();
         trackDistance =0;
+        changePolylines();
+    }
+
+    //changes polyline
+    private void changePolylines() {
+
+        colorValue = ReadFromPrefs.readPrefs("color_preference", this);
+        lineWeight = ReadFromPrefs.readPrefs("myLineWeight", this);
+        Log.d(TAG, "changePolylines: color value" + colorValue);
         polylineOptions = new PolylineOptions();
-        polylineOptions.color(Color.BLUE);
-//        polylineOptions.color(Integer.parseInt(colorValue));
-        polylineOptions.width(5);
-  //      polylineOptions.width(Float.parseFloat(lineWeight));
+        picklinecolors();
+        picklineweight();
 
     }
-   //save distance and time to Preferences
+//sets line thinkness.
+    private void picklineweight() {
+
+        switch(lineWeight){
+            case "1":
+                polylineOptions.width(1);
+                break;
+            case "2":
+                polylineOptions.width(2);
+                break;
+            case "3":
+                polylineOptions.width(3);
+                break;
+            case "4":
+                polylineOptions.width(4);
+                break;
+            case "5":
+                polylineOptions.width(5);
+                break;
+            case "6":
+                polylineOptions.width(6);
+                break;
+            case "7":
+                polylineOptions.width(7);
+                break;
+            case "8":
+                polylineOptions.width(8);
+                break;
+            case "9":
+                polylineOptions.width(9);
+                break;
+            case "10":
+                polylineOptions.width(10);
+                break;
+        }
+    }
+
+    //sets line color for poly line
+    private void picklinecolors() {
+        switch (colorValue){
+            case "RED":
+                polylineOptions.color(Color.RED);
+                break;
+            case "BLUE":
+                polylineOptions.color(Color.BLUE);
+                break;
+            case "YELLOW":
+                polylineOptions.color(Color.YELLOW);
+                break;
+            case "GREEN":
+                polylineOptions.color(Color.GREEN);
+                break;
+            case "WHITE":
+                polylineOptions.color(Color.WHITE);
+                break;
+            case "TEAL":
+                polylineOptions.color(Color.CYAN);
+            case "PINK":
+                polylineOptions.color(Color.CYAN);
+        }
+    }
+
+    //save distance and time to Preferences
    //high jacking this method cause this seems like where the action is happening
-    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping, double walkSpeed, double walkDistance , float locationMarkerColor){
+    private void saveLocationToPreferences(double latitude, double longitude, boolean isStopping, double walkSpeed, double walkDistance){
         //int colorValues, , int lineWeight
         SharedPreferences sharedPref = this.getSharedPreferences("com.maricia.mybikeparks_preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -651,8 +725,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             editor.putString(myActivityDate, activityDate); //date of activity
             editor.putString(myWalkSpeed,Double.valueOf(walkSpeed).toString());
             editor.putString(mywalkDistance, Double.valueOf(walkDistance).toString());
-            editor.putString(myLineWeight, Integer.valueOf(lineWeight).toString());
-         //   editor.putString(myColorValue, Integer.valueOf(colorValue).toString());
+         //   editor.putString(myLineWeight, Float.valueOf(lineWeight).toString());
+          //  editor.putString(myColorValue, Integer.valueOf(colorValue).toString());
          //   editor.putString(myMarkerColor, Float.valueOf(markerColor).toString());
             editor.commit();
         }else {

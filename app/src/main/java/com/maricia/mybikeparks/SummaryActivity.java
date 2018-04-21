@@ -30,11 +30,13 @@ import java.util.regex.Pattern;
 public class SummaryActivity extends AppCompatActivity{
 
     final static String TAG = "SummaryActivity";
-    TextView readFileTextView;  //readfile view
-    TextView totalTimeTextView;  //total time view
-    TextView dateWalkTextView; //date view
+    TextView readFileTextView;
+    TextView totalTimeTextView;
+    TextView dateWalkTextView;
     TextView speedWalkTextView;
     TextView distanceWalkTextView;
+    TextView pathColorValueTextView;
+    TextView lineWeightTextView;
     Button readfilebtn; //read file button
     String filename = "walkroutes"; //file name
     File file; //file for location
@@ -49,14 +51,13 @@ public class SummaryActivity extends AppCompatActivity{
         setbuttons();  //set button
         checkForFile();  //check for walkroute file
 
-
     }//end onCreate
 
     private void setbuttons() {
         //get buttons, and check to see if walk file exists
-        readfilebtn = this.findViewById(R.id.readfilebtn);
-        readFileTextView = this.findViewById(R.id.readFileTextView);
-        readfilebtn.setEnabled(false);
+       // readfilebtn = this.findViewById(R.id.readfilebtn);
+       // readFileTextView = this.findViewById(R.id.readFileTextView);
+       // readfilebtn.setEnabled(false);
     }
 
 
@@ -65,10 +66,12 @@ public class SummaryActivity extends AppCompatActivity{
         file = getBaseContext().getFileStreamPath(filename);
        // Log.d(TAG, "readFile: fileName typeOf: " + file.getClass().getName());
         if (file.exists()) {
-            readfilebtn.setEnabled(true);
+         //   readfilebtn.setEnabled(true);
             readFile();
         }
-        else { readfilebtn.setEnabled(false);}
+      //  else {
+           // readfilebtn.setEnabled(false);
+      //  }
     }
 
     public void readFile(){
@@ -87,8 +90,8 @@ public class SummaryActivity extends AppCompatActivity{
 
             getTextViews(extraFile);
             setTextViews();
-            if (hasClicked) readFileTextView.setText(extraFile);
-            Toast.makeText(getBaseContext(), filename,Toast.LENGTH_LONG).show();
+            //if (hasClicked) readFileTextView.setText(extraFile);
+           // Toast.makeText(getBaseContext(), filename,Toast.LENGTH_LONG).show();
 
             fis.close();
         } catch (FileNotFoundException e) {
@@ -105,17 +108,21 @@ public class SummaryActivity extends AppCompatActivity{
         dateWalkTextView.setText(ReadFromPrefs.readPrefs("myActivityDate", this));
         speedWalkTextView.setText(ReadFromPrefs.readPrefs("myWalkSpeed", this));
         distanceWalkTextView.setText(ReadFromPrefs.readPrefs("myWalkDistance", this));
+        pathColorValueTextView.setText(ReadFromPrefs.readPrefs("myLineColor", this));
+        lineWeightTextView.setText(ReadFromPrefs.readPrefs("myLineWeight", this));
 
     }
 
     private void getTextViews(String extraFile) {
 
-        readFileTextView = this.findViewById(R.id.readFileTextView);
+       // readFileTextView = this.findViewById(R.id.readFileTextView);
         //readFileTextView.setText(extraFile);
         totalTimeTextView = this.findViewById(R.id.totalTimeTextView);
         dateWalkTextView = this.findViewById(R.id.dateWalkTextView);
         speedWalkTextView = this.findViewById(R.id.speedWalkTextView);
         distanceWalkTextView = this.findViewById(R.id.distanceWalkTextView);
+        pathColorValueTextView= this.findViewById(R.id.pathColorValueTextView);
+        lineWeightTextView = this.findViewById(R.id.lineWeightTextView);
 
     }
 

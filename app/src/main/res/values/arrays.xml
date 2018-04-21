@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="entries_color_list_preference">
+     <string-array
+        name="values_color_list">
         <item>RED</item>
         <item>BLUE</item>
         <item>YELLOW</item>
         <item>ORANGE</item>
-        <item>PURPLE</item>
+        <item>TEAL</item>
         <item>GREEN</item>
-    </string-array>
-
-    <string-array name="values_color_list_preference">
-        <item>Color.RED</item>
-        <item>Color.BLUE</item>
-        <item>Color.YELLOW</item>
-        <item>Color.ORANGE</item>
-        <item>Color.PURPLE</item>
-        <item>Color.GREEN</item>
+        <item>PINK</item>
     </string-array>
 
 
-    <string-array name="entries_weight_list_preference">
+    <string-array
+        name="entries_weight_list_preference">
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -43,7 +37,8 @@
         <item>GREEN</item>
     </string-array>
 
-    <string-array name="values_marker_color_list_preference">
+    <string-array
+        name="values_marker_color_list_preference">
         <item>BitmapDescriptorFactory.HUE_RED</item>
         <item>BitmapDescriptorFactory.HUE_BLUE</item>
         <item>BitmapDescriptorFactory.HUE_YELLOW</item>
