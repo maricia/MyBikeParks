@@ -52,6 +52,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -77,7 +78,7 @@ import java.util.Map;
 //FragmentActivity
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, OnCameraMoveStartedListener,
-        GoogleApiClient.OnConnectionFailedListener, PlaceSelectionListener,
+        GoogleApiClient.OnConnectionFailedListener,
         LocationListener, SaveTrackDialogFragment.NoticeDialogListener{
 
     private GoogleMap mMap;                    //googlemap
@@ -318,12 +319,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onError(Status status) {
-
-        Toast.makeText(this, "OOPS SOMETHING WENT WRONG", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
     }
@@ -344,7 +339,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("You Are Here");
+        String Marker = ReadFromPrefs.readPrefs("myMarkerColor", this);
+        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(001f));
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker());
         currLocationMarker = mMap.addMarker(markerOptions);
 
         //save current location to prefences
@@ -405,37 +403,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }//end onMapReady
 
-
-    @Override
-    public void onPlaceSelected(Place place) {
-        //Log.d(TAG, "onPlaceSelected: *********" + place);
-        List<Address> addressList;
-        try {
-            //Just wanna make sure this if statement works. can you use .equals between a Place object and a String
-            if (!place.equals("")) {
-                //use geocoder class to get names
-                Geocoder geocoder = new Geocoder(this);
-                addressList = geocoder.getFromLocationName(place.getName().toString(), 5);      //returns as array of addresses maybe a place name, address, or airport code
-               // Log.d(TAG, "onPlaceSelected: address list: " + addressList);
-                if(addressList != null){
-                    //put a marker on all the places searched
-                    for (int i = 0; i < addressList.size(); i++) {
-                        Address myAddress = addressList.get(i);
-                        LatLng latLng = new LatLng(myAddress.getLatitude(), myAddress.getLongitude());
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(latLng);
-                        markerOptions.title(lastLocation.toString());
-                        mMap.addMarker(markerOptions);
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                        //optional - if not then camera will go to last place listed on mMap
-                        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                    }
-                }
-            }//end if
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
