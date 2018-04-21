@@ -304,6 +304,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         finishTracking();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
@@ -317,6 +321,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onError(Status status) {
 
         Toast.makeText(this, "OOPS SOMETHING WENT WRONG", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
