@@ -623,12 +623,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         //maybe save to prefences here
         saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance, lineWeight, colorValue,markerColor );
+        //this needs to be saved in prefrences as an Integers
+        //colorValue = Integer.valueOf(ReadFromPrefs.readPrefs("color_preference", this));
+        Log.d(TAG, "*******startTracking: color:" + colorValue);
         isTracking = true;
         points = new ArrayList<LatLng>();
         trackDistance =0;
         polylineOptions = new PolylineOptions();
-        polylineOptions.color(colorValue);
-        polylineOptions.width(lineWeight);
+        polylineOptions.color(Color.BLUE);
+        polylineOptions.width(5);
 
     }
    //save distance and time to Preferences
