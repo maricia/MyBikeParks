@@ -275,7 +275,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
                 getNearbyPlacesData.execute(dataTransfer);
-                Toast.makeText(MapsActivity.this, "Parks", Toast.LENGTH_LONG).show();
+              //  Toast.makeText(MapsActivity.this, "Parks", Toast.LENGTH_LONG).show();
                 break;
         }//end switch
     }
@@ -349,7 +349,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerOptions.position(latLng);
         markerOptions.title("You Are Here");
         String marker = ReadFromPrefs.readPrefs("myMarkerColor", this);
-        Log.d(TAG, "onLocationChanged: "+ marker);
+       // Log.d(TAG, "onLocationChanged: "+ marker);
        // markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         switch (marker){
             case "RED":
@@ -382,9 +382,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         currLocationMarker = mMap.addMarker(markerOptions);
-
-        //save current location to prefences
-
 
         //move mMap camera
         if (isFollowing) { // Todo: Find a way to detect if the user moves the map and toggle isFollowing if they are more interested in looking at another location.
@@ -661,8 +658,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         //maybe save to prefences here
         saveLocationToPreferences(latitude, longitude, isStopping,0,trackDistance );//, colorValue, lineWeightlineWeight,colorValue,markerColor
-        //TODO  this needs to be saved in prefrences as an Integers and as a float not a string
-
         isTracking = true;
         points = new ArrayList<LatLng>();
         trackDistance =0;
@@ -741,7 +736,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case "TEAL":
                 polylineOptions.color(Color.CYAN);
             case "PINK":
-                polylineOptions.color(Color.CYAN);
+                polylineOptions.color(Color.MAGENTA);
         }
     }
 
@@ -793,7 +788,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
-        locationRequest.setSmallestDisplacement(80); //todo maybe this should be a preference toggle? Battery saver mode?
+
+        //Power_preference
+        boolean power = ReadFromPrefs.readPower("Power_preference", this);
+        //("Power_preference" , this));
+        if(power){
+            locationRequest.setSmallestDisplacement(80); //todo maybe this should be a preference toggle? Battery saver mode?
+        }
+        Log.d(TAG, "startLocationUpdates: power " + power);
+
 
 
         // we build  a location settings request object using a builder based on the above

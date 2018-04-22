@@ -29,5 +29,11 @@ public class ReadFromPrefs {
           return sharedPref.getString(key, null);
     }
 
+    public static Boolean readPower(String key, Context context){
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context);
+        return sharedPref.getBoolean(key, true);
+    }
+
 
 }

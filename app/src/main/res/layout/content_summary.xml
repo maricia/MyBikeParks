@@ -199,6 +199,39 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/powerRow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="onClick">
+
+            <TextView
+                android:id="@+id/PowerColorTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_medium"
+                android:padding="3dip"
+                android:text="Power Mode:"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="101dp" />
+
+            <TextView
+                android:id="@+id/powerValueTextView"
+                android:layout_width="81dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="120dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_medium"
+                android:gravity="right|end"
+                android:padding="3dip" />
+
+        </TableRow>
+
+
+        <TableRow
             android:id="@+id/lineWeightRow"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

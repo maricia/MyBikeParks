@@ -12,7 +12,8 @@
                 android:key="Power_preference"
                 android:background="@android:color/background_light"
                 android:defaultValue="true"
-                android:title="Battery Saver" />
+                android:title="Battery Saver"
+                android:summary="For best performance leave on"/>
 
 
         </PreferenceCategory>

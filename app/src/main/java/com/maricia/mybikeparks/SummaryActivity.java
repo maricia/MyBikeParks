@@ -38,6 +38,7 @@ public class SummaryActivity extends AppCompatActivity{
     TextView pathColorValueTextView;
     TextView lineWeightTextView;
     TextView locationColorValueTextView;
+    TextView powerValueTextView;
     Button readfilebtn; //read file button
     String filename = "walkroutes"; //file name
     File file; //file for location
@@ -113,6 +114,14 @@ public class SummaryActivity extends AppCompatActivity{
         lineWeightTextView.setText(ReadFromPrefs.readPrefs("myLineWeight", this));
         locationColorValueTextView.setText(ReadFromPrefs.readPrefs("myMarkerColor", this));
 
+
+        boolean power = ReadFromPrefs.readPower("Power_preference", this);
+        if(power) {
+            powerValueTextView.setText("ON");
+        }else{
+            powerValueTextView.setText("OFF");
+        }
+
     }
 
     private void getTextViews(String extraFile) {
@@ -126,6 +135,7 @@ public class SummaryActivity extends AppCompatActivity{
         pathColorValueTextView= this.findViewById(R.id.pathColorValueTextView);
         lineWeightTextView = this.findViewById(R.id.lineWeightTextView);
         locationColorValueTextView = this.findViewById(R.id.locationColorValueTextView);
+        powerValueTextView = this.findViewById(R.id.powerValueTextView);
     }
 
 
