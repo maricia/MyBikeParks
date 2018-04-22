@@ -44,15 +44,6 @@
         android:title="Marker Colors">
 
         <ListPreference
-            android:key="myParkMarkerColor"
-            android:defaultValue="GREEN"
-            android:dialogTitle="Park Marker Color"
-            android:entries="@array/values_marker_color_list_preference"
-            android:entryValues="@array/values_marker_color_list_preference"
-            android:summary="change the color of the park marker"
-            android:title="Park Marker Color" />
-
-        <ListPreference
             android:key="myMarkerColor"
             android:defaultValue="RED"
             android:dialogTitle="Your Location Marker Color"

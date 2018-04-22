@@ -1,6 +1,9 @@
 package com.maricia.mybikeparks;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
@@ -14,6 +17,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+
+
 /**
  * Created by maricia on 3/21/2018.
  */
@@ -25,6 +30,7 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
     GoogleMap map;
     String url;
     RecyclerView mRecyclerView;
+    private Context context ;
 
 
     @Override
@@ -67,53 +73,15 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
             double lat = Double.parseDouble(googlePlace.get("lat"));
             double lng = Double.parseDouble(googlePlace.get("lng"));
             LatLng latLng = new LatLng(lat, lng);
-
             markerOptions.position(latLng);
             markerOptions.title(placeName + " " + vicinity);
-            //String parkMarker = ReadFromPrefs.readPrefs("myParkMarkerColor", this);
             //TODO read from prefences to get values
-            /*
-             Log.d(TAG, "onLocationChanged: "+ parkMarker);
-            switch (parkMarker){
-                case "RED":
-                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                     break;
-                case "BLUE":
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                    break;
-                case "YELLOW":
-                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                break;
-                case "GREEN":
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    break;
-                case "PURPLE":
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-                    break;
-                case "ORANGE":
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                    break;
-                case "PINK":
-                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-                    break;
-                case "LIGHT BLUE":
-                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    break;
-                case "TEAL":
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                    break;
-            }
-            */
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             map.addMarker(markerOptions);
             //optional - if not then camera will go to last place listed on map
             //map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             //map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             map.animateCamera(CameraUpdateFactory.zoomTo(15));
-
-
-
-
         }
     }
 

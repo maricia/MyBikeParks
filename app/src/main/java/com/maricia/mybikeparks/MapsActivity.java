@@ -349,7 +349,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerOptions.position(latLng);
         markerOptions.title("You Are Here");
         String marker = ReadFromPrefs.readPrefs("myMarkerColor", this);
-        Log.d(TAG, "onLocationChanged: "+ myMarkerColor);
+        Log.d(TAG, "onLocationChanged: "+ marker);
        // markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         switch (marker){
             case "RED":
