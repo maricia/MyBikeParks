@@ -642,11 +642,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     //changes polyline
     private void changePolylines() {
 
-        colorValue = ReadFromPrefs.readPrefs("color_preference", this);
+        colorValue = ReadFromPrefs.readPrefs("myLineColor", this);
         lineWeight = ReadFromPrefs.readPrefs("myLineWeight", this);
         Log.d(TAG, "changePolylines: color value" + colorValue);
         polylineOptions = new PolylineOptions();
         picklinecolors();
+        //    polylineOptions.color(Color.RED);
         picklineweight();
 
     }
@@ -689,6 +690,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //sets line color for poly line
     private void picklinecolors() {
+        polylineOptions.color(Color.BLUE);
+
         switch (colorValue){
             case "RED":
                 polylineOptions.color(Color.RED);

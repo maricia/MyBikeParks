@@ -24,7 +24,7 @@
             android:title="Path Settings">
 
             <ListPreference
-                android:defaultValue="Color.BLUE"
+                android:defaultValue="BLUE"
                 android:entries="@array/values_color_list"
                 android:entryValues="@array/values_color_list"
                 android:key="myLineColor"
@@ -47,7 +47,7 @@
         android:title="Marker Colors">
 
         <ListPreference
-            android:defaultValue="BitmapDescriptorFactory.HUE_GREEN"
+            android:defaultValue="GREEN"
             android:dialogTitle="Park Marker Color"
             android:entries="@array/marker_color_list_preference"
             android:entryValues="@array/values_marker_color_list_preference"
@@ -56,7 +56,7 @@
             android:title="Park Marker Color" />
 
         <ListPreference
-            android:defaultValue="BitmapDescriptorFactory.HUE_RED"
+            android:defaultValue="RED"
             android:dialogTitle="Your Location Marker Color"
             android:entries="@array/marker_color_list_preference"
             android:entryValues="@array/values_marker_color_list_preference"
