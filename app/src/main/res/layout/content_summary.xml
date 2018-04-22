@@ -74,7 +74,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="right|end"
                 android:padding="3dip"
-                android:text="TextView" />
+                />
         </TableRow>
 
         <TableRow
@@ -104,7 +104,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="right|end"
                 android:padding="3dip"
-                android:text="TextView" />
+                />
         </TableRow>
 
 
@@ -136,7 +136,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="right|end"
                 android:padding="3dip"
-                android:text="TextView" />
+                />
 
         </TableRow>
 
@@ -167,7 +167,6 @@
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="right|end"
                 android:padding="3dip"
-                android:text="TextView"
                 />
 
         </TableRow>
@@ -175,9 +174,11 @@
         android:layout_width="fill_parent"
         android:layout_height="2dp"
         android:background="#000000" />
+
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/settingInfo"
@@ -195,9 +196,12 @@
                 tools:layout_editor_absoluteX="101dp" />
 
         </TableRow>
+
         <TableRow
+            android:id="@+id/lineWeightRow"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:onClick="onClick">
 
             <TextView
                 android:id="@+id/lineWeightTextTextView"
@@ -221,15 +225,15 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="right|end"
-                android:padding="3dip"
-                android:text="TextView"
-                />
+                android:padding="3dip" />
 
         </TableRow>
 
         <TableRow
+            android:id="@+id/pathColorRow"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:onClick="onClick">
 
             <TextView
                 android:id="@+id/pathColorTextView"
@@ -253,11 +257,41 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="right|end"
-                android:padding="3dip"
-                android:text="TextView" />
+                android:padding="3dip" />
 
         </TableRow>
 
+        <TableRow
+            android:id="@+id/locMarkerRow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="onClick">
+
+            <TextView
+                android:id="@+id/locationColorTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_medium"
+                android:padding="3dip"
+                android:text="Location Marker Color:"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="101dp" />
+
+            <TextView
+                android:id="@+id/locationColorValueTextView"
+                android:layout_width="81dp"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="120dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_medium"
+                android:gravity="right|end"
+                android:padding="3dip" />
+
+        </TableRow>
 
 <!-- for test only
         <TableRow

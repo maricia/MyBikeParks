@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
@@ -347,10 +348,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("You Are Here");
-        String Marker = ReadFromPrefs.readPrefs("myMarkerColor", this);
-        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(001f));
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker());
+        String marker = ReadFromPrefs.readPrefs("myMarkerColor", this);
+        Log.d(TAG, "onLocationChanged: "+ myMarkerColor);
+       // markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        switch (marker){
+            case "RED":
+                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                 break;
+            case "BLUE":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                break;
+            case "YELLOW":
+                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                 break;
+            case "GREEN":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                break;
+            case "PURPLE":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                break;
+            case "ORANGE":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                break;
+            case "PINK":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                break;
+            case "LIGHT BLUE":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                break;
+            case "TEAL":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                break;
+        }
+
         currLocationMarker = mMap.addMarker(markerOptions);
 
         //save current location to prefences
@@ -728,9 +758,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             editor.putString(myActivityDate, activityDate); //date of activity
             editor.putString(myWalkSpeed,Double.valueOf(walkSpeed).toString());
             editor.putString(mywalkDistance, Double.valueOf(walkDistance).toString());
-         //   editor.putString(myLineWeight, Float.valueOf(lineWeight).toString());
-          //  editor.putString(myColorValue, Integer.valueOf(colorValue).toString());
-         //   editor.putString(myMarkerColor, Float.valueOf(markerColor).toString());
             editor.commit();
         }else {
             //this happens at stop
@@ -863,9 +890,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //Toast.makeText(getApplicationContext(), "file made ", Toast.LENGTH_LONG).show();
         }
     }//end
-
-
-
 
 
 }

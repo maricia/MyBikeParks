@@ -26,24 +26,16 @@
         <item>10</item>
     </string-array>
 
-
-
-    <string-array name="marker_color_list_preference">
-        <item>RED</item>
-        <item>BLUE</item>
-        <item>YELLOW</item>
-        <item>ORANGE</item>
-        <item>PURPLE</item>
-        <item>GREEN</item>
-    </string-array>
-
     <string-array
         name="values_marker_color_list_preference">
-        <item>BitmapDescriptorFactory.HUE_RED</item>
-        <item>BitmapDescriptorFactory.HUE_BLUE</item>
-        <item>BitmapDescriptorFactory.HUE_YELLOW</item>
-        <item>BitmapDescriptorFactory.HUE_ORANGE</item>
-        <item>BitmapDescriptorFactory.HUE_VIOLET</item>
-        <item>BitmapDescriptorFactory.HUE_GREEN</item>
+        <item>RED</item>
+        <item>PINK</item>
+        <item>BLUE</item>
+        <item>LIGHT BLUE</item>
+        <item>VIOLET</item>
+        <item>YELLOW</item>
+        <item>ORANGE</item>
+        <item>GREEN</item>
+        <item>TEAL</item>
     </string-array>
 </resources>

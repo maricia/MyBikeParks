@@ -5,14 +5,13 @@
     android:defaultValue="true" >
 
         <PreferenceCategory
-            android:key="Power_Menu"
             android:title="Power Setting">
 
 
             <SwitchPreference
+                android:key="Power_preference"
                 android:background="@android:color/background_light"
                 android:defaultValue="true"
-                android:key="Power_preference"
                 android:title="Battery Saver" />
 
 
@@ -20,47 +19,45 @@
 
 
         <PreferenceCategory
-            android:key="Tracker"
             android:title="Path Settings">
 
             <ListPreference
+                android:key="myLineColor"
                 android:defaultValue="BLUE"
                 android:entries="@array/values_color_list"
                 android:entryValues="@array/values_color_list"
-                android:key="myLineColor"
                 android:summary="change the color of your path"
                 android:title="Path Color" />
 
             <ListPreference
+                android:key="myLineWeight"
                 android:defaultValue="5"
                 android:dialogTitle="Path line weight"
                 android:entries="@array/entries_weight_list_preference"
                 android:entryValues="@array/entries_weight_list_preference"
-                android:key="myLineWeight"
                 android:summary="change the line weight of your path"
                 android:title="Path weight" />
         </PreferenceCategory>
 
 
     <PreferenceCategory
-        android:key="MarkerColors"
         android:title="Marker Colors">
 
         <ListPreference
+            android:key="myParkMarkerColor"
             android:defaultValue="GREEN"
             android:dialogTitle="Park Marker Color"
-            android:entries="@array/marker_color_list_preference"
+            android:entries="@array/values_marker_color_list_preference"
             android:entryValues="@array/values_marker_color_list_preference"
-            android:key="myParkMarkerColor"
             android:summary="change the color of the park marker"
             android:title="Park Marker Color" />
 
         <ListPreference
+            android:key="myMarkerColor"
             android:defaultValue="RED"
             android:dialogTitle="Your Location Marker Color"
-            android:entries="@array/marker_color_list_preference"
+            android:entries="@array/values_marker_color_list_preference"
             android:entryValues="@array/values_marker_color_list_preference"
-            android:key="myMarkerColor"
             android:summary="change the color of your location marker"
             android:title="Location Marker" />
     </PreferenceCategory>

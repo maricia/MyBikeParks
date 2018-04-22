@@ -37,6 +37,7 @@ public class SummaryActivity extends AppCompatActivity{
     TextView distanceWalkTextView;
     TextView pathColorValueTextView;
     TextView lineWeightTextView;
+    TextView locationColorValueTextView;
     Button readfilebtn; //read file button
     String filename = "walkroutes"; //file name
     File file; //file for location
@@ -110,6 +111,7 @@ public class SummaryActivity extends AppCompatActivity{
         distanceWalkTextView.setText(ReadFromPrefs.readPrefs("myWalkDistance", this));
         pathColorValueTextView.setText(ReadFromPrefs.readPrefs("myLineColor", this));
         lineWeightTextView.setText(ReadFromPrefs.readPrefs("myLineWeight", this));
+        locationColorValueTextView.setText(ReadFromPrefs.readPrefs("myMarkerColor", this));
 
     }
 
@@ -123,15 +125,16 @@ public class SummaryActivity extends AppCompatActivity{
         distanceWalkTextView = this.findViewById(R.id.distanceWalkTextView);
         pathColorValueTextView= this.findViewById(R.id.pathColorValueTextView);
         lineWeightTextView = this.findViewById(R.id.lineWeightTextView);
-
+        locationColorValueTextView = this.findViewById(R.id.locationColorValueTextView);
     }
 
 
     public void onClick(View v){
         hasClicked=true;
         Log.d(TAG, "onClick: Clicked me");
-        readFile();
-
+        Intent intetSettings = new Intent(this, SettingsActivity.class);
+        startActivity(intetSettings);
+        //readFile();
       //  new FilesCreations().execute();
     }
 
