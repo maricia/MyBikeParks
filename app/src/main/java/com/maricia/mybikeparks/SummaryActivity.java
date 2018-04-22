@@ -107,8 +107,8 @@ public class SummaryActivity extends AppCompatActivity{
 
         totalTimeTextView.setText(ReadFromPrefs.readPrefs("myStopTime", this));
         dateWalkTextView.setText(ReadFromPrefs.readPrefs("myActivityDate", this));
-        speedWalkTextView.setText(ReadFromPrefs.readPrefs("myWalkSpeed", this));
-        distanceWalkTextView.setText(ReadFromPrefs.readPrefs("myWalkDistance", this));
+//        speedWalkTextView.setText(ReadFromPrefs.readPrefs("myWalkSpeed", this));
+//        distanceWalkTextView.setText(ReadFromPrefs.readPrefs("myWalkDistance", this));
         pathColorValueTextView.setText(ReadFromPrefs.readPrefs("myLineColor", this));
         lineWeightTextView.setText(ReadFromPrefs.readPrefs("myLineWeight", this));
         locationColorValueTextView.setText(ReadFromPrefs.readPrefs("myMarkerColor", this));
@@ -121,8 +121,8 @@ public class SummaryActivity extends AppCompatActivity{
         //readFileTextView.setText(extraFile);
         totalTimeTextView = this.findViewById(R.id.totalTimeTextView);
         dateWalkTextView = this.findViewById(R.id.dateWalkTextView);
-        speedWalkTextView = this.findViewById(R.id.speedWalkTextView);
-        distanceWalkTextView = this.findViewById(R.id.distanceWalkTextView);
+       // speedWalkTextView = this.findViewById(R.id.speedWalkTextView);
+       // distanceWalkTextView = this.findViewById(R.id.distanceWalkTextView);
         pathColorValueTextView= this.findViewById(R.id.pathColorValueTextView);
         lineWeightTextView = this.findViewById(R.id.lineWeightTextView);
         locationColorValueTextView = this.findViewById(R.id.locationColorValueTextView);
