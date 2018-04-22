@@ -35,7 +35,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCNj5OT2cfFeCM9ooAJItnMqhfolBKuhUU" />
 
-        <activity android:name=".MapsActivity">
+        <activity android:name=".MapsActivity"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

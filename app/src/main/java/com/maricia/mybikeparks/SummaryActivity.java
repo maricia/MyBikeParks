@@ -141,7 +141,7 @@ public class SummaryActivity extends AppCompatActivity{
 
     public void onClick(View v){
         hasClicked=true;
-        Log.d(TAG, "onClick: Clicked me");
+     //   Log.d(TAG, "onClick: Clicked me");
         Intent intetSettings = new Intent(this, SettingsActivity.class);
         startActivity(intetSettings);
         //readFile();
@@ -158,7 +158,7 @@ public class SummaryActivity extends AppCompatActivity{
             double lng = Double.parseDouble(matcher.group(2));
             points.add(new LatLng(lat,lng));
         }
-        Log.d("points", points.toString());
+     //   Log.d("points", points.toString());
         return points;
     }
 
@@ -166,7 +166,7 @@ public class SummaryActivity extends AppCompatActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_summary_settings, menu);
-        Log.d(TAG, "onCreateOptionsMenu: here now 1");
+      //  Log.d(TAG, "onCreateOptionsMenu: here now 1");
         return true;
     }
 

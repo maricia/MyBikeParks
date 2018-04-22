@@ -53,7 +53,7 @@ public class SaveTrackDialogFragment extends DialogFragment
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the positive button event back to the host activity
                         mListener.onDialogPositiveClick(SaveTrackDialogFragment.this);
-                        Log.d(TAG, "onClick:  uhh lets see" );
+               //         Log.d(TAG, "onClick:  uhh lets see" );
                         MapsActivity backtomap = new MapsActivity();
 
                     }

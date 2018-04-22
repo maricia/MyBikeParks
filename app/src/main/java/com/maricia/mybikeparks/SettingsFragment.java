@@ -44,7 +44,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         speed = sharedPref.getString("myWalkSpeed", "0");
         distance = sharedPref.getString("myWalkDistance", "0");
 
-        Log.d(TAG, "ReadFromPrefs: " + theDate + " " + startLat + " " + startLng + " " + walkTime);
+     //   Log.d(TAG, "ReadFromPrefs: " + theDate + " " + startLat + " " + startLng + " " + walkTime);
 
         //read from pref example
         //String latitudeString = pref.getString("Latitude", "0");

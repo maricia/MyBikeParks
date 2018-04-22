@@ -42,7 +42,7 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String>{
 
             DownloadUrl downloadUrl = new DownloadUrl();
             googlePlacesData = downloadUrl.readUrl(url);
-            Log.d(TAG, "doInBackground: " + googlePlacesData.toString());
+        //    Log.d(TAG, "doInBackground: " + googlePlacesData.toString());
 
         } catch (IOException e) {
             e.printStackTrace();

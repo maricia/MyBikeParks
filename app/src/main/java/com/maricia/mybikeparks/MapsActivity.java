@@ -513,7 +513,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (location != null) {
                     onLocationChanged(location);
                 }
-                Log.d(TAG, "onSuccess: last known location" + latitude + longitude);
+               // Log.d(TAG, "onSuccess: last known location" + latitude + longitude);
                 //maybe save to prefernces here
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -530,16 +530,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private String getUrl(double latitude, double longitude, String nearbyPlace ){
 
-        Log.d(TAG, "getUrl: latitude and longitude" + latitude +", " + longitude);
-        Log.d(TAG, "getUrl: radius " + PROXIMITY_RADIUS);
-        Log.d(TAG, "getUrl: types" + nearbyPlace);
+     //   Log.d(TAG, "getUrl: latitude and longitude" + latitude +", " + longitude);
+    //    Log.d(TAG, "getUrl: radius " + PROXIMITY_RADIUS);
+    //    Log.d(TAG, "getUrl: types" + nearbyPlace);
         StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlaceUrl.append("location="+latitude+","+longitude);
         googlePlaceUrl.append("&radius="+PROXIMITY_RADIUS);
         googlePlaceUrl.append("&types="+nearbyPlace);
         googlePlaceUrl.append("&key="+"AIzaSyBu79j0aAe6zfixFxaWfLdK2ScSBOohdxA");
         googlePlaceUrl.append("&sensor=true");
-        Log.d(TAG, "getUrl: my url" + googlePlaceUrl);
+    //    Log.d(TAG, "getUrl: my url" + googlePlaceUrl);
         return googlePlaceUrl.toString();
     }
 
@@ -582,7 +582,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public  void startTiming() {
-        Log.d(TAG, "startTiming: Stsrtnow");
+    //    Log.d(TAG, "startTiming: Stsrtnow");
         timeKeeper = (Chronometer) findViewById(R.id.timmer);
         timeKeeper.setBase(SystemClock.elapsedRealtime()); //reset
         String activityDate = getCurrentDate();
@@ -669,7 +669,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         colorValue = ReadFromPrefs.readPrefs("myLineColor", this);
         lineWeight = ReadFromPrefs.readPrefs("myLineWeight", this);
-        Log.d(TAG, "changePolylines: color value" + colorValue);
+      //  Log.d(TAG, "changePolylines: color value" + colorValue);
         polylineOptions = new PolylineOptions();
         picklinecolors();
         //    polylineOptions.color(Color.RED);
@@ -795,7 +795,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(power){
             locationRequest.setSmallestDisplacement(80); //todo maybe this should be a preference toggle? Battery saver mode?
         }
-        Log.d(TAG, "startLocationUpdates: power " + power);
+       // Log.d(TAG, "startLocationUpdates: power " + power);
 
 
 
@@ -804,7 +804,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         builder.addLocationRequest(locationRequest);
         LocationSettingsRequest locationSettingsRequest = builder.build();
 
-        Log.d("MapDemoActivity", "WHAT AM I DOING");
+      //  Log.d("MapDemoActivity", "WHAT AM I DOING");
         // We check if the system is capable of sending/receiving location requests
         SettingsClient settingsClient = LocationServices.getSettingsClient(this);
         settingsClient.checkLocationSettings(locationSettingsRequest);
